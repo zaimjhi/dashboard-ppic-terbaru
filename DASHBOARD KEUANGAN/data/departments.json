@@ -1,0 +1,18 @@
+{
+    "departments": [
+        {
+            "id": "ppic",
+            "name": "PPIC",
+            "url": "https://docs.google.com/spreadsheets/d/e/2PACX-1vRqMZX-vHRj5O0KIlThwayVCWOX6JctaM-Y7vV_yR9deR4AXrMbeqbVjAE4iO7LP3K9MqxgfIVBecCa/pub?output=xlsx",
+            "updated_at": "2026-09-13 18:49:21",
+            "webhook_url": "https://script.google.com/macros/s/AKfycbyddnGprL_LlSuC3xxMSKsM3TEfkVCVYWUHQYJDz_vYPvxC_eWUooR3BQa0MR8_EqoMug/exec"
+        },
+        {
+            "id": "truck_scale",
+            "name": "Truck Scale",
+            "url": "https://docs.google.com/spreadsheets/d/e/2PACX-1vRzkgf_gG4vooQPDbVbE1k9Ui6NmLwVvU3V4gKoDI04rpGmvguWYjY-95YWXcoNCodbid4YAuw4nj2B/pub?output=xlsx",
+            "updated_at": "2026-09-13 19:05:50"
+        }
+    ],
+    "default_dept": "ppic"
+}

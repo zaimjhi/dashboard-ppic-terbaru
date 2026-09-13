@@ -1,0 +1,1513 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manager Dashboard - Overtime PPIC</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230f172a'/%3E%3Cpath d='M20 18h24v8H20zm0 10h18v8H20zm0 10h24v8H20z' fill='%233b82f6'/%3E%3Cpath d='M42 16h10v32H42z' fill='%233b82f6' opacity='.4'/%3E%3C/svg%3E">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.0/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="vendor/pptxgen.bundle.js"></script>
+    <script>
+        if (typeof PptxGenJS === 'undefined') {
+            document.write('<script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"><\/script>');
+        }
+    </script>
+    <link rel="stylesheet" href="style.css?v=20260906_04">
+    <style id="cp-showroom-inline-style">
+        #companyProfileScreen {
+            display: block !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            min-height: 100vh !important;
+            background: #ffffff !important;
+            color: #1e293b !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            box-sizing: border-box !important;
+            overflow-x: hidden !important;
+        }
+        #companyProfileScreen.hidden {
+            display: none !important;
+        }
+        #companyProfileScreen header {
+            display: block !important;
+            width: 100% !important;
+            background: rgba(255, 255, 255, 0.98) !important;
+            border-bottom: 1px solid #e2e8f0 !important;
+            position: sticky !important;
+            top: 0 !important;
+            z-index: 40 !important;
+            box-sizing: border-box !important;
+        }
+        #companyProfileScreen main {
+            display: block !important;
+            width: 100% !important;
+            max-width: 1280px !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            padding-left: 1.5rem !important;
+            padding-right: 1.5rem !important;
+            padding-top: 2.5rem !important;
+            box-sizing: border-box !important;
+        }
+        #companyProfileScreen .cp-filter-container {
+            display: flex !important;
+            justify-content: center !important;
+            border-bottom: 2px solid #e2e8f0 !important;
+            margin-bottom: 2.5rem !important;
+            overflow-x: auto !important;
+            padding: 0.25rem 0 !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+        }
+        #companyProfileScreen .cp-filter-tab {
+            position: relative !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            padding: 0.85rem 1.75rem !important;
+            font-size: 0.9375rem !important;
+            font-weight: 600 !important;
+            color: #64748b !important;
+            background: transparent !important;
+            border: none !important;
+            border-radius: 0 !important;
+            border-bottom: 3px solid transparent !important;
+            box-shadow: none !important;
+            cursor: pointer !important;
+            white-space: nowrap !important;
+            margin-bottom: -2px !important;
+            transition: all 0.2s ease !important;
+        }
+        #companyProfileScreen .cp-filter-tab:hover {
+            color: #0052cc !important;
+            background: transparent !important;
+            box-shadow: none !important;
+        }
+        #companyProfileScreen .cp-filter-tab.active {
+            color: #0052cc !important;
+            font-weight: 800 !important;
+            border-bottom: 3px solid #0052cc !important;
+            background: transparent !important;
+            box-shadow: none !important;
+        }
+        #sectionShowroom,
+        #sectionKeunggulan,
+        #sectionJaringan,
+        #sectionIntegritas {
+            scroll-margin-top: 100px !important;
+        }
+        #companyProfileScreen #showroomCardGrid {
+            display: grid !important;
+            grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+            gap: 2rem !important;
+            width: 100% !important;
+            padding: 0.5rem 0 !important;
+            box-sizing: border-box !important;
+        }
+        @media (max-width: 1024px) {
+            #companyProfileScreen #showroomCardGrid {
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                gap: 1.5rem !important;
+            }
+        }
+        @media (max-width: 640px) {
+            #companyProfileScreen #showroomCardGrid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+        #companyProfileScreen .showroomCard {
+            width: 100% !important;
+            min-width: 0 !important;
+            background: #ffffff !important;
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 1.25rem !important;
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05) !important;
+            padding: 1.5rem !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: space-between !important;
+            box-sizing: border-box !important;
+            transition: all 0.3s ease !important;
+        }
+        #companyProfileScreen .showroomCard:hover {
+            transform: translateY(-5px) !important;
+            box-shadow: 0 18px 36px -4px rgba(0, 82, 204, 0.12) !important;
+            border-color: #93c5fd !important;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-white font-sans antialiased">
+
+    <div id="loginScreen" class="min-h-screen flex items-center justify-center bg-slate-950 px-4">
+        <div class="w-full max-w-md rounded-2xl border border-slate-700 bg-slate-900/90 p-8 shadow-2xl shadow-blue-900/20">
+            <div class="text-center mb-8">
+                <img src="logo_pokphand.png" alt="Logo Charoen Pokphand Singa Biru" class="w-16 h-16 object-contain mx-auto mb-3">
+                <h1 class="text-3xl font-bold text-white">OVT<span class="text-blue-400">Manager</span></h1>
+                <p class="text-slate-400 mt-2">Masuk ke dashboard PPIC Charoen Pokphand</p>
+            </div>
+
+            <form id="loginForm" class="space-y-5">
+                <div>
+                    <label for="loginUsername" class="block text-xs uppercase tracking-wider text-slate-400 mb-2">Username</label>
+                    <input id="loginUsername" type="text" autocomplete="username" class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-3 text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none" placeholder="Masukkan username" required>
+                </div>
+                <div>
+                    <label for="loginPassword" class="block text-xs uppercase tracking-wider text-slate-400 mb-2">Password</label>
+                    <input id="loginPassword" type="password" autocomplete="current-password" class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-3 text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none" placeholder="Masukkan password" required>
+                </div>
+                <div id="loginError" class="hidden rounded-lg border border-rose-500/50 bg-rose-500/10 px-3 py-2 text-sm text-rose-300"></div>
+                <button type="submit" class="w-full rounded-lg bg-blue-600 hover:bg-blue-500 px-4 py-3 text-sm font-semibold text-white transition shadow-lg shadow-blue-500/20">Masuk</button>
+            </form>
+
+            <div class="mt-6 pt-6 border-t border-slate-700 text-center">
+                <button id="btnViewProfile" class="text-sm text-blue-400 hover:text-blue-300 transition">🏢 Lihat Company Profile</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="companyProfileScreen" class="hidden min-h-screen bg-white text-slate-900 pb-16">
+        <!-- TOP SHOWROOM NAVBAR -->
+        <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+                <!-- Brand: Charoen Pokphand Blue Lion Logo -->
+                <div class="flex items-center gap-3.5 cursor-pointer" id="brandLogoHome" title="Kembali ke atas">
+                    <img src="logo_pokphand.png" alt="Logo Singa Biru Charoen Pokphand" class="h-14 w-auto object-contain hover:scale-105 transition-transform duration-300">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] font-black tracking-widest uppercase text-blue-800 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">SINGA BIRU INDONESIA</span>
+                            <span class="text-[10px] font-semibold text-slate-400">AGRO-FOOD INTEGRATED</span>
+                        </div>
+                        <h1 class="text-xl sm:text-2xl font-black tracking-tight text-slate-950 leading-none mt-1">CHAROEN POKPHAND</h1>
+                    </div>
+                </div>
+
+                <!-- Navigation Links (Toyota-style Menu) -->
+                <nav class="flex items-center gap-3 sm:gap-6 md:gap-8 text-xs sm:text-sm font-semibold text-slate-600 overflow-x-auto py-1">
+                    <button class="navShowroomLink text-blue-700 font-bold hover:text-blue-800 transition whitespace-nowrap px-1 py-0.5" data-target="sectionShowroom">Katalog Lini Bisnis</button>
+                    <button class="navShowroomLink hover:text-blue-700 transition whitespace-nowrap px-1 py-0.5" data-target="sectionKeunggulan">Standar Kualitas</button>
+                    <button class="navShowroomLink hover:text-blue-700 transition whitespace-nowrap px-1 py-0.5" data-target="sectionJaringan">Fasilitas & Jaringan</button>
+                    <button class="navShowroomLink hover:text-blue-700 transition whitespace-nowrap px-1 py-0.5" data-target="sectionIntegritas">Visi & Komitmen</button>
+                </nav>
+
+                <!-- Action Button Back to Dashboard Login -->
+                <div class="flex items-center gap-3">
+                    <button id="btnBackToLogin" class="flex items-center gap-2 rounded-full border border-slate-300 hover:border-blue-600 bg-white px-4 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-bold text-slate-700 hover:text-blue-700 transition-all shadow-sm hover:shadow active:scale-95 whitespace-nowrap">
+                        <span>←</span><span>Kembali ke Login</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- MAIN HERO & TITLE (Gaya Toyota: "Temukan All New Hilux Rangga") -->
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10">
+            <!-- Corporate Tag & Subtitle -->
+            <div class="text-center max-w-3xl mx-auto mb-6">
+                <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold mb-3">
+                    <span class="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
+                    <span>PT Charoen Pokphand Indonesia Tbk • Eastern Region</span>
+                </div>
+                <h2 class="text-3xl sm:text-5xl font-extrabold text-slate-950 tracking-tight leading-tight">
+                    Temukan Ekosistem Singa Biru
+                </h2>
+                <p class="text-slate-500 text-sm sm:text-base mt-3 leading-relaxed">
+                    Integrasi pakan ternak berteknologi tinggi, peternakan modern bio-security tertutup, pemotongan higienis standar Halal, serta logistik rantai dingin terpercaya.
+                </p>
+            </div>
+
+            <!-- HORIZONTAL CATEGORY FILTER TABS (Toyota Style: All | Gasoline | Diesel) -->
+            <div class="cp-filter-container flex justify-center border-b border-slate-200 mb-10 overflow-x-auto py-1">
+                <div class="inline-flex gap-2 sm:gap-6 px-2">
+                    <button class="cp-filter-tab active" data-filter="all">Semua Lini</button>
+                    <button class="cp-filter-tab" data-filter="feed">Pakan Ternak (Feedmill)</button>
+                    <button class="cp-filter-tab" data-filter="farm">Pembibitan & Farm</button>
+                    <button class="cp-filter-tab" data-filter="food">Pengolahan Pangan (Food)</button>
+                    <button class="cp-filter-tab" data-filter="logistics">Rantai Dingin & Logistik</button>
+                </div>
+            </div>
+
+            <!-- SHOWCASE SECTION (Toyota 3-Cards Clean Responsive Grid) -->
+            <section id="sectionShowroom" class="relative">
+                <!-- Cards Container (Grid 3 Kolom Responsif) -->
+                <div id="showroomCardGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 py-2">
+
+                    <!-- CARD 1: Hi-Pro-Vite Feedmill -->
+                    <div class="showroomCard cp-card-shadow rounded-2xl bg-white overflow-hidden flex flex-col justify-between p-6 transition-all" data-category="feed">
+                        <div>
+                            <!-- Product Image Showcase -->
+                            <div class="relative h-56 rounded-xl overflow-hidden bg-slate-100 mb-6 group cursor-pointer profileInteractiveCard"
+                                 data-title="Hi-Pro-Vite Feedmill System (Pabrik Pakan Berlogo Singa Biru)"
+                                 data-category="Lini Bisnis Hulu • Pakan Ternak"
+                                 data-image="https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=1200&q=80"
+                                 data-desc="Pabrik pakan ternak modern berlogo Singa Biru Charoen Pokphand menghasilkan pakan unggas bernutrisi presisi (Hi-Pro-Vite seri 511, 512, 591). Dilengkapi silo baja penyimpanan bahan baku kedap udara berkapasitas puluhan ribu ton dan sistem formulasi otomatis berbasis komputer mikro.">
+                                <img src="https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=800&q=80" alt="Silo Pakan Singa Biru" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                <div class="absolute top-3 left-3 bg-blue-700 text-white text-[11px] font-black px-2.5 py-1 rounded shadow">
+                                    SINGA BIRU • FEED
+                                </div>
+                                <div class="absolute bottom-3 right-3 bg-white/90 backdrop-blur-md px-2.5 py-1 rounded text-[11px] font-bold text-slate-800 shadow">
+                                    Lihat Detail 🔍
+                                </div>
+                            </div>
+
+                            <!-- Model Title & Subtitle (Toyota Style) -->
+                            <h3 class="text-xl font-black text-slate-900 leading-snug">Hi-Pro-Vite Feedmill</h3>
+                            <div class="mt-1 flex items-center justify-between">
+                                <span class="text-xs font-semibold text-slate-500">Kapasitas Produksi</span>
+                                <span class="text-sm font-bold text-blue-700">Skala Industri Utama</span>
+                            </div>
+
+                            <hr class="my-4 border-slate-100">
+
+                            <!-- Bullet Points Specification (Toyota Style) -->
+                            <div class="space-y-2.5 mb-6">
+                                <div class="cp-bullet-item">
+                                    <span>Formulasi nutrisi mikro presisi tinggi bersertifikat ISO 9001 & FSSC 22000</span>
+                                </div>
+                                <div class="cp-bullet-item">
+                                    <span>Rasio konversi pakan (FCR) optimal teruji di laboratorium riset modern</span>
+                                </div>
+                                <div class="cp-bullet-item">
+                                    <span>Penyimpanan bahan baku di Silo berlogo Singa Biru kedap udara & temperatur terkontrol</span>
+                                </div>
+                                <div class="cp-bullet-item">
+                                    <span>100% bebas antibiotik pemacu pertumbuhan berbahaya (AGP-Free)</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card Action Button -->
+                        <button class="profileInteractiveCard w-full py-2.5 px-4 rounded-xl border border-blue-600 text-blue-700 hover:bg-blue-600 hover:text-white text-xs font-bold transition-all text-center flex items-center justify-center gap-2"
+                                data-title="Hi-Pro-Vite Feedmill System (Pabrik Pakan Berlogo Singa Biru)"
+                                data-category="Lini Bisnis Hulu • Pakan Ternak"
+                                data-image="https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=1200&q=80"
+                                data-desc="Pabrik pakan ternak modern berlogo Singa Biru Charoen Pokphand menghasilkan pakan unggas bernutrisi presisi (Hi-Pro-Vite seri 511, 512, 591). Dilengkapi silo baja penyimpanan bahan baku kedap udara berkapasitas puluhan ribu ton dan sistem formulasi otomatis berbasis komputer mikro.">
+                            <span>Pelajari Spesifikasi Fasilitas</span>
+                            <span>→</span>
+                        </button>
+                    </div>
+
+                    <!-- CARD 2: Smart Closed-House Farm -->
+                    <div class="showroomCard cp-card-shadow rounded-2xl bg-white overflow-hidden flex flex-col justify-between p-6 transition-all" data-category="farm">
+                        <div>
+                            <!-- Product Image Showcase -->
+                            <div class="relative h-56 rounded-xl overflow-hidden bg-slate-100 mb-6 group cursor-pointer profileInteractiveCard"
+                                 data-title="Smart Closed-House & Breeding Farm"
+                                 data-category="Lini Bisnis Tengah • Pembibitan Unggas"
+                                 data-image="https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?auto=format&fit=crop&w=1200&q=80"
+                                 data-desc="Peternakan ayam ras modern tertutup (Closed-House) dengan pengatur iklim mikro digital (suhu, kelembapan, sirkulasi udara) 24/7. Menghasilkan Day-Old-Chick (DOC) dan ayam broiler yang sehat, bugar, serta terlindung oleh sistem biosecurity 3-ring isolasi ketat.">
+                                <img src="https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?auto=format&fit=crop&w=800&q=80" alt="Closed House Farm Singa Biru" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                <div class="absolute top-3 left-3 bg-emerald-700 text-white text-[11px] font-black px-2.5 py-1 rounded shadow">
+                                    SMART FARM • DOC
+                                </div>
+                                <div class="absolute bottom-3 right-3 bg-white/90 backdrop-blur-md px-2.5 py-1 rounded text-[11px] font-bold text-slate-800 shadow">
+                                    Lihat Detail 🔍
+                                </div>
+                            </div>
+
+                            <!-- Model Title & Subtitle (Toyota Style) -->
+                            <h3 class="text-xl font-black text-slate-900 leading-snug">Smart Closed-House Farm</h3>
+                            <div class="mt-1 flex items-center justify-between">
+                                <span class="text-xs font-semibold text-slate-500">Standar Biosecurity</span>
+                                <span class="text-sm font-bold text-emerald-700">Tingkat Tertinggi (Level 3)</span>
+                            </div>
+
+                            <hr class="my-4 border-slate-100">
+
+                            <!-- Bullet Points Specification (Toyota Style) -->
+                            <div class="space-y-2.5 mb-6">
+                                <div class="cp-bullet-item">
+                                    <span>Kandang tertutup otomatis dengan sensor mikroklimat cerdas 24 jam</span>
+                                </div>
+                                <div class="cp-bullet-item">
+                                    <span>Bibit Day-Old-Chick (DOC) unggul dengan imunitas tinggi dan pertumbuhan seragam</span>
+                                </div>
+                                <div class="cp-bullet-item">
+                                    <span>Disinfeksi terpadu seluruh armada pengangkut dan personel farm</span>
+                                </div>
+                                <div class="cp-bullet-item">
+                                    <span>Kemitraan inti-plasma dengan ribuan peternak di Kawasan Indonesia Timur</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card Action Button -->
+                        <button class="profileInteractiveCard w-full py-2.5 px-4 rounded-xl border border-emerald-600 text-emerald-700 hover:bg-emerald-600 hover:text-white text-xs font-bold transition-all text-center flex items-center justify-center gap-2"
+                                data-title="Smart Closed-House & Breeding Farm"
+                                data-category="Lini Bisnis Tengah • Pembibitan Unggas"
+                                data-image="https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?auto=format&fit=crop&w=1200&q=80"
+                                data-desc="Peternakan ayam ras modern tertutup (Closed-House) dengan pengatur iklim mikro digital (suhu, kelembapan, sirkulasi udara) 24/7. Menghasilkan Day-Old-Chick (DOC) dan ayam broiler yang sehat, bugar, serta terlindung oleh sistem biosecurity 3-ring isolasi ketat.">
+                            <span>Pelajari Spesifikasi Fasilitas</span>
+                            <span>→</span>
+                        </button>
+                    </div>
+
+                    <!-- CARD 3: Modern RPA & Halal Food Processing -->
+                    <div class="showroomCard cp-card-shadow rounded-2xl bg-white overflow-hidden flex flex-col justify-between p-6 transition-all" data-category="food">
+                        <div>
+                            <!-- Product Image Showcase -->
+                            <div class="relative h-56 rounded-xl overflow-hidden bg-slate-100 mb-6 group cursor-pointer profileInteractiveCard"
+                                 data-title="RPA Higienis & Halal Food Processing (Fiesta, Champ, Okey)"
+                                 data-category="Lini Bisnis Hilir • Olahan Pangan"
+                                 data-image="https://images.unsplash.com/photo-1615485500704-8e990f9900f7?auto=format&fit=crop&w=1200&q=80"
+                                 data-desc="Rumah Potong Ayam (RPA) modern terotomasi penuh dengan standar syariah bersertifikasi Halal MUI dan pengawasan dokter hewan berpengalaman. Menghasilkan karkas segar dingin, daging ayam beku higienis, serta aneka olahan daging bergizi (Fiesta, Champ, Okey).">
+                                <img src="https://images.unsplash.com/photo-1615485500704-8e990f9900f7?auto=format&fit=crop&w=800&q=80" alt="Pemrosesan Daging Halal" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                <div class="absolute top-3 left-3 bg-amber-600 text-white text-[11px] font-black px-2.5 py-1 rounded shadow">
+                                    HALAL MUI • FOOD
+                                </div>
+                                <div class="absolute bottom-3 right-3 bg-white/90 backdrop-blur-md px-2.5 py-1 rounded text-[11px] font-bold text-slate-800 shadow">
+                                    Lihat Detail 🔍
+                                </div>
+                            </div>
+
+                            <!-- Model Title & Subtitle (Toyota Style) -->
+                            <h3 class="text-xl font-black text-slate-900 leading-snug">RPA & Halal Food Processing</h3>
+                            <div class="mt-1 flex items-center justify-between">
+                                <span class="text-xs font-semibold text-slate-500">Sertifikasi Higienitas</span>
+                                <span class="text-sm font-bold text-amber-700">100% Halal MUI & HACCP</span>
+                            </div>
+
+                            <hr class="my-4 border-slate-100">
+
+                            <!-- Bullet Points Specification (Toyota Style) -->
+                            <div class="space-y-2.5 mb-6">
+                                <div class="cp-bullet-item">
+                                    <span>Penyembelihan halal manual oleh juru sembelih tersertifikasi resmi</span>
+                                </div>
+                                <div class="cp-bullet-item">
+                                    <span>Teknologi Air Chilling cepat untuk menjaga kesegaran daging tanpa bakteri</span>
+                                </div>
+                                <div class="cp-bullet-item">
+                                    <span>Fasilitas pemotongan higienis bebas sentuhan tangan langsung manusia</span>
+                                </div>
+                                <div class="cp-bullet-item">
+                                    <span>Menaungi produk konsumen terkemuka seperti Fiesta, Champ, dan Okey</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card Action Button -->
+                        <button class="profileInteractiveCard w-full py-2.5 px-4 rounded-xl border border-amber-600 text-amber-700 hover:bg-amber-600 hover:text-white text-xs font-bold transition-all text-center flex items-center justify-center gap-2"
+                                data-title="RPA Higienis & Halal Food Processing (Fiesta, Champ, Okey)"
+                                data-category="Lini Bisnis Hilir • Olahan Pangan"
+                                data-image="https://images.unsplash.com/photo-1615485500704-8e990f9900f7?auto=format&fit=crop&w=1200&q=80"
+                                data-desc="Rumah Potong Ayam (RPA) modern terotomasi penuh dengan standar syariah bersertifikasi Halal MUI dan pengawasan dokter hewan berpengalaman. Menghasilkan karkas segar dingin, daging ayam beku higienis, serta aneka olahan daging bergizi (Fiesta, Champ, Okey).">
+                            <span>Pelajari Spesifikasi Fasilitas</span>
+                            <span>→</span>
+                        </button>
+                    </div>
+
+                    <!-- CARD 4: Cold-Chain Logistics & Distribution -->
+                    <div class="showroomCard cp-card-shadow rounded-2xl bg-white overflow-hidden flex flex-col justify-between p-6 transition-all" data-category="logistics">
+                        <div>
+                            <!-- Product Image Showcase -->
+                            <div class="relative h-56 rounded-xl overflow-hidden bg-slate-100 mb-6 group cursor-pointer profileInteractiveCard"
+                                 data-title="Armada Cold-Chain & Distribusi Wilayah Timur"
+                                 data-category="Rantai Pasok • Logistik Pendingin"
+                                 data-image="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1200&q=80"
+                                 data-desc="Jaringan distribusi logistik berpendingin terpadu dengan armada truk berinsulasi thermo-king dan sensor suhu IoT real-time. Memastikan suhu beku stabil di bawah -18°C mulai dari pabrik pengolahan hingga mitra pasar ritel dan supermarket.">
+                                <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80" alt="Distribusi Rantai Dingin" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                <div class="absolute top-3 left-3 bg-sky-700 text-white text-[11px] font-black px-2.5 py-1 rounded shadow">
+                                    COLD CHAIN • IOT
+                                </div>
+                                <div class="absolute bottom-3 right-3 bg-white/90 backdrop-blur-md px-2.5 py-1 rounded text-[11px] font-bold text-slate-800 shadow">
+                                    Lihat Detail 🔍
+                                </div>
+                            </div>
+
+                            <!-- Model Title & Subtitle (Toyota Style) -->
+                            <h3 class="text-xl font-black text-slate-900 leading-snug">Cold-Chain Logistics</h3>
+                            <div class="mt-1 flex items-center justify-between">
+                                <span class="text-xs font-semibold text-slate-500">Temperatur Terkontrol</span>
+                                <span class="text-sm font-bold text-sky-700">Stabil Hingga -18°C</span>
+                            </div>
+
+                            <hr class="my-4 border-slate-100">
+
+                            <!-- Bullet Points Specification (Toyota Style) -->
+                            <div class="space-y-2.5 mb-6">
+                                <div class="cp-bullet-item">
+                                    <span>Monitoring telemetri GPS dan sensor suhu thermo-king real-time</span>
+                                </div>
+                                <div class="cp-bullet-item">
+                                    <span>Gudang cold storage terpusat dengan kapasitas ribuan meter kubik</span>
+                                </div>
+                                <div class="cp-bullet-item">
+                                    <span>Rute pasokan efisien menjangkau seluruh pulau di Kawasan Indonesia Timur</span>
+                                </div>
+                                <div class="cp-bullet-item">
+                                    <span>Integrasi jadwal pengiriman presisi bersama tim logistik dan PPIC</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card Action Button -->
+                        <button class="profileInteractiveCard w-full py-2.5 px-4 rounded-xl border border-sky-600 text-sky-700 hover:bg-sky-600 hover:text-white text-xs font-bold transition-all text-center flex items-center justify-center gap-2"
+                                data-title="Armada Cold-Chain & Distribusi Wilayah Timur"
+                                data-category="Rantai Pasok • Logistik Pendingin"
+                                data-image="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1200&q=80"
+                                data-desc="Jaringan distribusi logistik berpendingin terpadu dengan armada truk berinsulasi thermo-king dan sensor suhu IoT real-time. Memastikan suhu beku stabil di bawah -18°C mulai dari pabrik pengolahan hingga mitra pasar ritel dan supermarket.">
+                            <span>Pelajari Spesifikasi Fasilitas</span>
+                            <span>→</span>
+                        </button>
+                    </div>
+
+                    <!-- CARD 5: Quality Control & Automated Microbiology Lab -->
+                    <div class="showroomCard cp-card-shadow rounded-2xl bg-white overflow-hidden flex flex-col justify-between p-6 transition-all" data-category="feed">
+                        <div>
+                            <!-- Product Image Showcase -->
+                            <div class="relative h-56 rounded-xl overflow-hidden bg-slate-100 mb-6 group cursor-pointer profileInteractiveCard"
+                                 data-title="Automated Quality Assurance & Microbiology Lab"
+                                 data-category="Laboratorium Mutu • Bio-Analitik"
+                                 data-image="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=1200&q=80"
+                                 data-desc="Laboratorium pengujian mutu terakreditasi internasional yang memverifikasi profil protein pakan, kadar kelembaban, dan bebas mikroba patogen pada setiap siklus produksi sebelum produk didistribusikan ke pasar.">
+                                <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=800&q=80" alt="Laboratorium Mutu Singa Biru" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                <div class="absolute top-3 left-3 bg-indigo-700 text-white text-[11px] font-black px-2.5 py-1 rounded shadow">
+                                    QA & QC • ISO 17025
+                                </div>
+                                <div class="absolute bottom-3 right-3 bg-white/90 backdrop-blur-md px-2.5 py-1 rounded text-[11px] font-bold text-slate-800 shadow">
+                                    Lihat Detail 🔍
+                                </div>
+                            </div>
+
+                            <!-- Model Title & Subtitle (Toyota Style) -->
+                            <h3 class="text-xl font-black text-slate-900 leading-snug">Automated QA & Lab QC</h3>
+                            <div class="mt-1 flex items-center justify-between">
+                                <span class="text-xs font-semibold text-slate-500">Standar Pengujian</span>
+                                <span class="text-sm font-bold text-indigo-700">Akreditasi Laboratorium ISO</span>
+                            </div>
+
+                            <hr class="my-4 border-slate-100">
+
+                            <!-- Bullet Points Specification (Toyota Style) -->
+                            <div class="space-y-2.5 mb-6">
+                                <div class="cp-bullet-item">
+                                    <span>Uji spektrofotometri asam amino dan profil nutrisi pakan per batch</span>
+                                </div>
+                                <div class="cp-bullet-item">
+                                    <span>Pemeriksaan kontaminan mikrobiologi dan jaminan zero Salmonella</span>
+                                </div>
+                                <div class="cp-bullet-item">
+                                    <span>Dukungan tim ahli nutrisi hewan dan dokter hewan tersumpah</span>
+                                </div>
+                                <div class="cp-bullet-item">
+                                    <span>Pencatatan digital hasil uji lab terintegrasi dengan sistem produksi</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card Action Button -->
+                        <button class="profileInteractiveCard w-full py-2.5 px-4 rounded-xl border border-indigo-600 text-indigo-700 hover:bg-indigo-600 hover:text-white text-xs font-bold transition-all text-center flex items-center justify-center gap-2"
+                                data-title="Automated Quality Assurance & Microbiology Lab"
+                                data-category="Laboratorium Mutu • Bio-Analitik"
+                                data-image="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=1200&q=80"
+                                data-desc="Laboratorium pengujian mutu terakreditasi internasional yang memverifikasi profil protein pakan, kadar kelembaban, dan bebas mikroba patogen pada setiap siklus produksi sebelum produk didistribusikan ke pasar.">
+                            <span>Pelajari Spesifikasi Fasilitas</span>
+                            <span>→</span>
+                        </button>
+                    </div>
+
+                    <!-- CARD 6: Modern Grain Silo Storage Complex -->
+                    <div class="showroomCard cp-card-shadow rounded-2xl bg-white overflow-hidden flex flex-col justify-between p-6 transition-all" data-category="feed">
+                        <div>
+                            <!-- Product Image Showcase -->
+                            <div class="relative h-56 rounded-xl overflow-hidden bg-slate-100 mb-6 group cursor-pointer profileInteractiveCard"
+                                 data-title="Kompleks Silo Penyimpanan Berlogo Singa Biru"
+                                 data-category="Infrastruktur Pabrik • Pergudangan Silo"
+                                 data-image="https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=1200&q=80"
+                                 data-desc="Landmark silo silindris putih bertuliskan logo Singa Biru Charoen Pokphand yang kokoh berdiri di pelabuhan dan kawasan industri. Berfungsi sebagai penyimpan cadangan biji-bijian jagung dan kedelai dengan aerasi terkendali untuk menjaga pasokan bahan baku pakan nasional.">
+                                <img src="https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=800&q=80" alt="Kompleks Silo Singa Biru" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                <div class="absolute top-3 left-3 bg-blue-800 text-white text-[11px] font-black px-2.5 py-1 rounded shadow">
+                                    SILO KOMPLEKS • CADANGAN
+                                </div>
+                                <div class="absolute bottom-3 right-3 bg-white/90 backdrop-blur-md px-2.5 py-1 rounded text-[11px] font-bold text-slate-800 shadow">
+                                    Lihat Detail 🔍
+                                </div>
+                            </div>
+
+                            <!-- Model Title & Subtitle (Toyota Style) -->
+                            <h3 class="text-xl font-black text-slate-900 leading-snug">Kompleks Silo Singa Biru</h3>
+                            <div class="mt-1 flex items-center justify-between">
+                                <span class="text-xs font-semibold text-slate-500">Kapasitas Penyimpanan</span>
+                                <span class="text-sm font-bold text-blue-800">Puluhan Ribu Metrik Ton</span>
+                            </div>
+
+                            <hr class="my-4 border-slate-100">
+
+                            <!-- Bullet Points Specification (Toyota Style) -->
+                            <div class="space-y-2.5 mb-6">
+                                <div class="cp-bullet-item">
+                                    <span>Struktur baja anti-korosi dengan kontrol suhu kedap udara otomatis</span>
+                                </div>
+                                <div class="cp-bullet-item">
+                                    <span>Logo Singa Biru ikonik sebagai penanda standar mutu industri agrobisnis</span>
+                                </div>
+                                <div class="cp-bullet-item">
+                                    <span>Sistem conveyor terpadu terhubung langsung ke unit penggilingan pakan</span>
+                                </div>
+                                <div class="cp-bullet-item">
+                                    <span>Menjaga cadangan bahan pangan ternak tetap higienis sepanjang tahun</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card Action Button -->
+                        <button class="profileInteractiveCard w-full py-2.5 px-4 rounded-xl border border-blue-800 text-blue-800 hover:bg-blue-800 hover:text-white text-xs font-bold transition-all text-center flex items-center justify-center gap-2"
+                                data-title="Kompleks Silo Penyimpanan Berlogo Singa Biru"
+                                data-category="Infrastruktur Pabrik • Pergudangan Silo"
+                                data-image="https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=1200&q=80"
+                                data-desc="Landmark silo silindris putih bertuliskan logo Singa Biru Charoen Pokphand yang kokoh berdiri di pelabuhan dan kawasan industri. Berfungsi sebagai penyimpan cadangan biji-bijian jagung dan kedelai dengan aerasi terkendali untuk menjaga pasokan bahan baku pakan nasional.">
+                            <span>Pelajari Spesifikasi Fasilitas</span>
+                            <span>→</span>
+                        </button>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- CORPORATE VALUES & STRENGTHS SECTION (Toyota "Gazoo Racing / Electrified" Style Showcase) -->
+            <section id="sectionKeunggulan" class="mt-20 pt-12 border-t border-slate-200">
+                <div class="text-center max-w-2xl mx-auto mb-10">
+                    <span class="text-xs uppercase tracking-widest text-blue-700 font-extrabold">KEUNGGULAN OPERASIONAL</span>
+                    <h3 class="text-2xl sm:text-3xl font-black text-slate-900 mt-1">Standar Unggul Singa Biru</h3>
+                    <p class="text-xs sm:text-sm text-slate-500 mt-2">Komitmen tanpa henti menghadirkan protein unggas bermutu tinggi untuk masyarakat Indonesia.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200 hover:border-blue-400 hover:bg-white transition-all shadow-sm">
+                        <div class="w-12 h-12 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center text-2xl font-black mb-4">🏆</div>
+                        <h4 class="font-bold text-slate-900 text-base">50+ Tahun Dedikasi</h4>
+                        <p class="text-xs text-slate-500 mt-2 leading-relaxed">Pelopor industri agribisnis dan produsen pakan ternak terbesar dan terpercaya di Indonesia.</p>
+                    </div>
+                    <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200 hover:border-emerald-400 hover:bg-white transition-all shadow-sm">
+                        <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-2xl font-black mb-4">🛡️</div>
+                        <h4 class="font-bold text-slate-900 text-base">100% Halal & Aman</h4>
+                        <p class="text-xs text-slate-500 mt-2 leading-relaxed">Sertifikasi Halal MUI terverifikasi di seluruh tahapan pemotongan dan pengolahan pangan.</p>
+                    </div>
+                    <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200 hover:border-amber-400 hover:bg-white transition-all shadow-sm">
+                        <div class="w-12 h-12 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-2xl font-black mb-4">⚙️</div>
+                        <h4 class="font-bold text-slate-900 text-base">Efisiensi Presisi PPIC</h4>
+                        <p class="text-xs text-slate-500 mt-2 leading-relaxed">Pengelolaan produksi dan jam kerja lembur terukur menjaga produktivitas optimal tim harian.</p>
+                    </div>
+                    <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200 hover:border-indigo-400 hover:bg-white transition-all shadow-sm">
+                        <div class="w-12 h-12 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center text-2xl font-black mb-4">🤝</div>
+                        <h4 class="font-bold text-slate-900 text-base">Kemitraan Peternak</h4>
+                        <p class="text-xs text-slate-500 mt-2 leading-relaxed">Mendukung kemakmuran ribuan keluarga peternak mitra di seluruh Kawasan Indonesia Timur.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 3: FASILITAS & JARINGAN DISTRIBUSI TERPADU -->
+            <section id="sectionJaringan" class="mt-20 pt-14 border-t border-slate-200">
+                <div class="text-center max-w-3xl mx-auto mb-10">
+                    <span class="text-xs uppercase tracking-widest text-blue-700 font-extrabold bg-blue-50 px-3.5 py-1 rounded-full border border-blue-200">JARINGAN & FASILITAS STRATEGIS</span>
+                    <h3 class="text-2xl sm:text-4xl font-black text-slate-900 mt-3">Ekosistem Fasilitas Terpadu Kawasan Timur</h3>
+                    <p class="text-xs sm:text-sm text-slate-500 mt-2 leading-relaxed">
+                        Didukung puluhan unit pabrik pakan, farm modern, RPA bersertifikasi Halal, dan hub cold storage yang terhubung secara terintegrasi di seluruh wilayah Indonesia Timur.
+                    </p>
+                </div>
+
+                <!-- Facility Highlights Cards (Toyota Feature Style) -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="p-6 rounded-2xl bg-white border border-slate-200 hover:border-blue-400 hover:shadow-lg transition-all flex flex-col justify-between profileInteractiveCard cursor-pointer group"
+                         data-title="Hub Logistik Rantai Dingin (Cold Storage Terpusat)"
+                         data-category="Jaringan Distribusi • Rantai Pasok"
+                         data-image="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1200&q=80"
+                         data-desc="Pusat distribusi rantai dingin berkapasitas ribuan meter kubik yang beroperasi 24 jam dengan kontrol suhu digital presisi -18°C. Menghubungkan pelabuhan peti kemas dengan armada distribusi antarpulau di Kawasan Indonesia Timur.">
+                        <div>
+                            <div class="h-48 rounded-xl overflow-hidden mb-4 relative bg-slate-100">
+                                <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80" alt="Hub Cold Storage" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                <span class="absolute top-3 left-3 bg-blue-700 text-white text-[10px] font-black px-2.5 py-1 rounded shadow">HUB REGIONAL MAKASSAR</span>
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-lg group-hover:text-blue-700 transition">Sentra Cold Chain & Depo Distribusi</h4>
+                            <p class="text-xs text-slate-500 mt-2 leading-relaxed">Memastikan ketersediaan pasokan daging karkas beku dan produk olahan makanan ke ritel modern dan pasar tradisional tanpa putus rantai dingin.</p>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-blue-700">
+                            <span>Lihat Detail Fasilitas</span>
+                            <span>→</span>
+                        </div>
+                    </div>
+
+                    <div class="p-6 rounded-2xl bg-white border border-slate-200 hover:border-emerald-400 hover:shadow-lg transition-all flex flex-col justify-between profileInteractiveCard cursor-pointer group"
+                         data-title="Sentra Pemuliaan DOC & Closed House Cluster"
+                         data-category="Fasilitas Farm • Kawasan Indonesia Timur"
+                         data-image="https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?auto=format&fit=crop&w=1200&q=80"
+                         data-desc="Kluster peternakan kandang tertutup modern yang dilengkapi sistem otomatisasi pakan, air minum, dan ventilasi terpadu. Memiliki standar biosecurity level 3 dengan zona sanitasi ketat untuk menjamin kesehatan unggas bebas penyakit.">
+                        <div>
+                            <div class="h-48 rounded-xl overflow-hidden mb-4 relative bg-slate-100">
+                                <img src="https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?auto=format&fit=crop&w=800&q=80" alt="Farm Cluster" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                <span class="absolute top-3 left-3 bg-emerald-700 text-white text-[10px] font-black px-2.5 py-1 rounded shadow">CLUSTER FARM & DOC</span>
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-lg group-hover:text-emerald-700 transition">Kluster Farm Closed House</h4>
+                            <p class="text-xs text-slate-500 mt-2 leading-relaxed">Pusat pembibitan Day-Old-Chick (DOC) dan peternakan ayam broiler pedaging dengan pengawasan dokter hewan profesional harian.</p>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-emerald-700">
+                            <span>Lihat Standar Biosecurity</span>
+                            <span>→</span>
+                        </div>
+                    </div>
+
+                    <div class="p-6 rounded-2xl bg-white border border-slate-200 hover:border-amber-400 hover:shadow-lg transition-all flex flex-col justify-between profileInteractiveCard cursor-pointer group"
+                         data-title="Rumah Potong Ayam (RPA) Higienis & Halal Terpadu"
+                         data-category="Fasilitas Pengolahan • Halal Bersertifikat"
+                         data-image="https://images.unsplash.com/photo-1615485500704-8e990f9900f7?auto=format&fit=crop&w=1200&q=80"
+                         data-desc="Fasilitas RPA berkapasitas ribuan ekor per jam dengan rantai pendingin cepat (Air Chilling System). Menjamin kualitas daging ayam segar, higienis, bebas cemaran bakteri, serta memenuhi syariat Islam 100%.">
+                        <div>
+                            <div class="h-48 rounded-xl overflow-hidden mb-4 relative bg-slate-100">
+                                <img src="https://images.unsplash.com/photo-1615485500704-8e990f9900f7?auto=format&fit=crop&w=800&q=80" alt="RPA Halal Singa Biru" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                <span class="absolute top-3 left-3 bg-amber-600 text-white text-[10px] font-black px-2.5 py-1 rounded shadow">RPA HIGIENIS TERPADU</span>
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-lg group-hover:text-amber-700 transition">RPA Higienis Standar Halal MUI</h4>
+                            <p class="text-xs text-slate-500 mt-2 leading-relaxed">Fasilitas pemotongan ayam modern dengan sertifikasi Halal MUI, NKV, dan HACCP untuk melayani kebutuhan hotel, restoran, dan ritel.</p>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-amber-700">
+                            <span>Lihat Sertifikasi Halal</span>
+                            <span>→</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 4: VISI, MISI & TATA KELOLA KORPORASI -->
+            <section id="sectionIntegritas" class="mt-20 pt-14 border-t border-slate-200">
+                <div class="text-center max-w-3xl mx-auto mb-10">
+                    <span class="text-xs uppercase tracking-widest text-indigo-700 font-extrabold bg-indigo-50 px-3.5 py-1 rounded-full border border-indigo-200">VISI, MISI & TATA KELOLA</span>
+                    <h3 class="text-2xl sm:text-4xl font-black text-slate-900 mt-3">Komitmen & Nilai Luhur Singa Biru</h3>
+                    <p class="text-xs sm:text-sm text-slate-500 mt-2 leading-relaxed">
+                        Filosofi Tiga Manfaat menjadi fondasi keberlanjutan bisnis Charoen Pokphand: Memberikan manfaat bagi Negara, Masyarakat, dan Perusahaan.
+                    </p>
+                </div>
+
+                <!-- 3 Pillars Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="p-8 rounded-3xl bg-gradient-to-b from-blue-50/70 to-white border border-blue-100 shadow-sm hover:shadow-md transition-all">
+                        <div class="w-14 h-14 rounded-2xl bg-blue-600 text-white flex items-center justify-center text-2xl font-black mb-5 shadow-lg shadow-blue-500/20">
+                            🇮🇩
+                        </div>
+                        <h4 class="text-xl font-bold text-slate-950 mb-2">1. Manfaat bagi Negara</h4>
+                        <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                            Mendukung ketahanan pangan nasional dengan menyediakan sumber protein unggas berkualitas tinggi, harga terjangkau, serta menyerap panen jagung petani lokal.
+                        </p>
+                    </div>
+
+                    <div class="p-8 rounded-3xl bg-gradient-to-b from-emerald-50/70 to-white border border-emerald-100 shadow-sm hover:shadow-md transition-all">
+                        <div class="w-14 h-14 rounded-2xl bg-emerald-600 text-white flex items-center justify-center text-2xl font-black mb-5 shadow-lg shadow-emerald-500/20">
+                            👥
+                        </div>
+                        <h4 class="text-xl font-bold text-slate-950 mb-2">2. Manfaat bagi Masyarakat</h4>
+                        <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                            Membina ribuan peternak rakyat melalui kemitraan inti-plasma, menyediakan lapangan kerja luas, serta berkontribusi aktif dalam program gizi bebas stunting.
+                        </p>
+                    </div>
+
+                    <div class="p-8 rounded-3xl bg-gradient-to-b from-indigo-50/70 to-white border border-indigo-100 shadow-sm hover:shadow-md transition-all">
+                        <div class="w-14 h-14 rounded-2xl bg-indigo-600 text-white flex items-center justify-center text-2xl font-black mb-5 shadow-lg shadow-indigo-500/20">
+                            ⭐
+                        </div>
+                        <h4 class="text-xl font-bold text-slate-950 mb-2">3. Manfaat bagi Perusahaan</h4>
+                        <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                            Pertumbuhan bisnis yang kokoh, sehat, dan berkesinambungan dengan penerapan tata kelola Good Corporate Governance (GCG) berstandar dunia.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Corporate Fact Sheet Bar -->
+                <div class="mt-10 p-6 rounded-2xl bg-slate-50 border border-slate-200 grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
+                    <div>
+                        <div class="text-2xl sm:text-3xl font-black text-blue-700">1972</div>
+                        <div class="text-xs text-slate-500 font-semibold mt-1">Tahun Awal Beroperasi</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl sm:text-3xl font-black text-blue-700">100%</div>
+                        <div class="text-xs text-slate-500 font-semibold mt-1">Sertifikasi Halal MUI</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl sm:text-3xl font-black text-blue-700">Puluhan Ribu</div>
+                        <div class="text-xs text-slate-500 font-semibold mt-1">Peternak Mitra Binaan</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl sm:text-3xl font-black text-blue-700">ISO 9001</div>
+                        <div class="text-xs text-slate-500 font-semibold mt-1">& FSSC 22000 Terakreditasi</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CALL TO ACTION BANNER (Toyota Ask Tarra / Pesan Sekarang Style) -->
+            <section class="mt-16 rounded-3xl bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-900 text-white p-8 sm:p-12 shadow-xl relative overflow-hidden">
+                <div class="absolute right-0 top-0 bottom-0 w-1/3 opacity-10 flex items-center justify-center pointer-events-none">
+                    <!-- Giant Watermark Lion -->
+                    <svg class="w-96 h-96" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+                    </svg>
+                </div>
+                <div class="relative z-10 max-w-2xl">
+                    <span class="text-xs uppercase tracking-widest font-black text-sky-300">SISTEM MONITORING LEMBUR & KEUANGAN</span>
+                    <h3 class="text-2xl sm:text-4xl font-extrabold mt-2 leading-tight">Siap Melanjutkan Pemantauan Operasional?</h3>
+                    <p class="text-sky-100 text-xs sm:text-sm mt-3 leading-relaxed">
+                        Akses modul analitik data lembur, konfigurasi link spreadsheet per departemen, perhitungan biaya estimasi SPL, dan pelaporan eksekutif terintegrasi.
+                    </p>
+                    <div class="mt-6 flex flex-wrap items-center gap-4">
+                        <button id="btnFooterBackLogin" class="px-6 py-3 rounded-xl bg-white text-blue-900 hover:bg-blue-50 font-bold text-sm shadow-md transition-all active:scale-95">
+                            Masuk ke Dashboard Sistem →
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- FOOTER (Toyota Clean Gray Minimalist Style) -->
+        <footer class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 pt-8 border-t border-slate-200 text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <span class="font-bold text-slate-700">PT Charoen Pokphand Indonesia Tbk</span>
+                <span>•</span>
+                <span>Eastern Indonesia Operations</span>
+            </div>
+            <p>© 2026 PT Charoen Pokphand Indonesia. Hak cipta dilindungi undang-undang.</p>
+        </footer>
+
+        <!-- INTERACTIVE DETAIL MODAL (Toyota Spec Sheet Modal) -->
+        <div id="modalProfileDetail" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
+            <div class="w-full max-w-2xl rounded-3xl bg-white shadow-2xl overflow-hidden my-6 transform transition-all border border-slate-200">
+                <div class="relative h-64 overflow-hidden bg-slate-900">
+                    <img id="modalProfileImg" src="" alt="Detail Fasilitas" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
+                    <button id="btnProfileModalClose" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/80 hover:bg-white text-slate-900 flex items-center justify-center text-lg font-bold transition shadow">&times;</button>
+                    <div class="absolute bottom-4 left-6 right-6">
+                        <span id="modalProfileCategory" class="text-xs font-bold uppercase tracking-wider text-blue-700 bg-white/95 px-2.5 py-1 rounded shadow-sm">Kategori Fasilitas</span>
+                        <h3 id="modalProfileTitle" class="text-2xl font-black text-white mt-2">Judul Detail</h3>
+                    </div>
+                </div>
+                <div class="p-6 sm:p-8 space-y-4">
+                    <div class="flex items-center gap-2 text-xs text-blue-700 font-bold bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-100">
+                        <span>🦁</span>
+                        <span>Identitas Standar Singa Biru Charoen Pokphand Indonesia</span>
+                    </div>
+                    <p id="modalProfileDesc" class="text-slate-700 text-sm leading-relaxed whitespace-pre-line">Deskripsi lengkap spesifikasi fasilitas dan operasional...</p>
+                    <div class="pt-5 border-t border-slate-100 flex items-center justify-between">
+                        <span class="text-xs text-emerald-600 font-bold flex items-center gap-1.5">
+                            <span>✓</span><span>Standar ISO 9001 & Halal Terverifikasi</span>
+                        </span>
+                        <button id="btnProfileModalCloseBottom" class="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition">Tutup Pratinjau</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="appDashboard" class="hidden h-screen w-full flex">
+        <aside class="w-64 glass-effect border-r border-slate-200 p-6 flex flex-col justify-between z-10">
+            <div>
+                <h1 class="text-2xl font-bold mb-8 flex items-center">
+                    <span class="logo-ovt">OVT</span><span class="logo-manager">Manager</span>
+                </h1>
+                <nav class="space-y-2" id="sidebarNav">
+                    <a href="javascript:void(0)" id="menuRingkasan" class="nav-menu-item active">
+                        <span class="text-base">📊</span>
+                        <span>Dashboard Analytics</span>
+                    </a>
+                    <a href="javascript:void(0)" id="menuLembur" class="nav-menu-item">
+                        <span class="text-base">📋</span>
+                        <span>Tabel Riwayat</span>
+                    </a>
+                    <a href="javascript:void(0)" id="menuBenchmark" class="nav-menu-item">
+                        <span class="text-base">⚖️</span>
+                        <span>Benchmark Antar-Divisi</span>
+                    </a>
+                </nav>
+            </div>
+            <div class="space-y-3">
+                <div class="space-y-1.5">
+                    <div class="flex items-center justify-between">
+                        <label class="text-xs uppercase tracking-wider text-slate-500 font-bold">Departemen</label>
+                        <button id="btnBukaModalDept" class="text-xs font-semibold transition flex items-center gap-1 cursor-pointer" title="Kelola Departemen & Link Spreadsheet">
+                            <span>⚙️</span><span>Kelola</span>
+                        </button>
+                    </div>
+                    <select id="selectDepartemen" class="w-full text-sm rounded-lg p-2 cursor-pointer font-semibold">
+                        <option value="ppic">PPIC</option>
+                    </select>
+                </div>
+                <div class="space-y-2 pt-2 border-t border-slate-200">
+                    <button id="btnRefreshData" class="w-full rounded-lg text-sm font-bold px-3 py-2.5 shadow-md transition flex items-center justify-center gap-2 cursor-pointer">
+                        <span id="refreshIcon">🔄</span>
+                        <span id="refreshLabel">Refresh Data</span>
+                    </button>
+                    <button id="btnBukaSimulator" class="w-full rounded-lg text-sm font-bold px-3 py-2.5 shadow-md transition flex items-center justify-center gap-2 cursor-pointer">
+                        <span>🧮</span><span>Simulasi Lembur (SPL)</span>
+                    </button>
+                    <button id="btnExportWa" class="w-full rounded-lg text-sm font-bold px-3 py-2.5 shadow-md transition flex items-center justify-center gap-2 cursor-pointer">
+                        <span>📲</span><span>Salin Ringkasan WA</span>
+                    </button>
+                    <button id="btnExportExcel" class="w-full rounded-lg text-sm font-bold px-3 py-2.5 shadow-md transition flex items-center justify-center gap-2 cursor-pointer">
+                        <span>📗</span><span>Export Excel (.xlsx)</span>
+                    </button>
+                    <button id="btnExportPpt" class="w-full rounded-lg text-sm font-bold px-3 py-2.5 shadow-md transition flex items-center justify-center gap-2 cursor-pointer">
+                        <span>📊</span><span>Export PPT Presentasi (.pptx)</span>
+                    </button>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button id="btnExportCsv" class="w-full rounded-lg text-xs font-bold px-2 py-2.5 shadow-md transition cursor-pointer flex items-center justify-center gap-1">
+                            <span>📄</span><span>Export CSV</span>
+                        </button>
+                        <button id="btnExportPdf" class="w-full rounded-lg text-xs font-bold px-2 py-2.5 shadow-md transition cursor-pointer flex items-center justify-center gap-1">
+                            <span>📕</span><span>Export PDF</span>
+                        </button>
+                    </div>
+                </div>
+                <button id="btnLogout" class="w-full rounded-lg px-3 py-2 text-sm font-bold transition flex items-center justify-center gap-2 cursor-pointer">
+                    <span>🚪</span><span>Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <main class="flex-1 p-8 overflow-y-auto relative">
+        <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-blue-500/20 rounded-full blur-[100px] pointer-events-none"></div>
+
+        <!-- FILTER BARU: RENTANG TANGGAL -->
+        <div class="flex flex-col lg:flex-row justify-between items-start lg:items-end mb-8 relative z-10 border-b border-slate-700 pb-4">
+            <header class="mb-4 lg:mb-0">
+                <div class="flex items-center gap-3">
+                    <h2 id="headerJudulTim" class="text-3xl font-semibold">Monitoring Lembur Tim PPIC</h2>
+                    <span id="badgeDepartemen" class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-400 border border-blue-500/30">PPIC</span>
+                </div>
+                <p class="text-slate-400 mt-1">Gunakan filter untuk menyeleksi rentang waktu & karyawan.</p>
+                <div class="flex items-center gap-1.5 flex-wrap mt-3" id="containerDatePresets">
+                    <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mr-1">Preset:</span>
+                    <button type="button" class="btn-date-preset" data-preset="today">⚡ Hari Ini</button>
+                    <button type="button" class="btn-date-preset" data-preset="this_week">📅 Minggu Ini</button>
+                    <button type="button" class="btn-date-preset" data-preset="this_month">🗓️ Bulan Ini</button>
+                    <button type="button" class="btn-date-preset" data-preset="last_month">⏪ Bulan Lalu</button>
+                    <button type="button" class="btn-date-preset active" data-preset="all">🔄 Semua Periode</button>
+                </div>
+            </header>
+            <div class="flex flex-col md:flex-row gap-4 w-full lg:w-auto justify-end items-end">
+                <div class="w-full md:w-40">
+                    <label class="text-xs text-slate-400 block mb-1">Mulai Tanggal:</label>
+                    <input type="date" id="filterTglMulai" class="bg-slate-800 border border-slate-600 w-full text-white text-sm rounded-lg p-2 focus:ring-blue-500 outline-none cursor-pointer shadow-md">
+                </div>
+                <div class="w-full md:w-40">
+                    <label class="text-xs text-slate-400 block mb-1">Sampai Tanggal:</label>
+                    <input type="date" id="filterTglAkhir" class="bg-slate-800 border border-slate-600 w-full text-white text-sm rounded-lg p-2 focus:ring-blue-500 outline-none cursor-pointer shadow-md">
+                </div>
+                <div class="w-full md:w-52">
+                    <label class="text-xs text-slate-400 block mb-1">Nama Karyawan:</label>
+                    <select id="filterKaryawan" class="bg-slate-800 border border-slate-600 w-full text-white text-sm rounded-lg p-2 focus:ring-blue-500 outline-none cursor-pointer shadow-md">
+                        <option value="Semua">Semua Karyawan</option>
+                    </select>
+                </div>
+                <div class="w-full md:w-40">
+                    <label class="text-xs text-slate-400 block mb-1">Target Jam:</label>
+                    <input type="number" id="filterTarget" value="45" min="0" step="0.5" class="bg-slate-800 border border-slate-600 w-full text-white text-sm rounded-lg p-2 focus:ring-blue-500 outline-none shadow-md">
+                </div>
+                <div class="w-full md:w-44">
+                    <label class="text-xs text-slate-400 block mb-1">Status Approval:</label>
+                    <select id="filterApprovalStatus" class="bg-slate-800 border border-slate-600 w-full text-white text-sm rounded-lg p-2 focus:ring-blue-500 outline-none cursor-pointer shadow-md">
+                        <option value="Semua">Semua Status</option>
+                        <option value="Pending">⏳ Pending</option>
+                        <option value="Approved">✅ Approved</option>
+                        <option value="Rejected">❌ Rejected</option>
+                    </select>
+                </div>
+                <div class="flex gap-2 flex-wrap justify-end hidden">
+                    <button id="btnRefreshDataHidden" class="hidden" aria-hidden="true"></button>
+                </div>
+            </div>
+        </div>
+
+        <div id="halamanRingkasan" class="block">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8 relative z-10">
+                <div class="h-32 glass-effect rounded-xl p-6 shadow-lg flex flex-col justify-center border-t-4 border-blue-500">
+                    <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Total OVT Keseluruhan</p>
+                    <p class="text-4xl font-bold text-blue-400 mt-2" id="kpiTotalJam">0 Jam</p>
+                </div>
+                <div class="h-32 glass-effect rounded-xl p-6 shadow-lg flex flex-col justify-center border-t-4 border-slate-500">
+                    <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">OVT Hari Biasa (B)</p>
+                    <p class="text-3xl font-bold text-slate-300 mt-2" id="kpiJamB">0 Jam</p>
+                </div>
+                <div class="h-32 glass-effect rounded-xl p-6 shadow-lg flex flex-col justify-center border-t-4 border-rose-500">
+                    <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">OVT Hari Libur (L)</p>
+                    <p class="text-3xl font-bold text-rose-400 mt-2" id="kpiJamL">0 Jam</p>
+                </div>
+                <div class="h-32 glass-effect rounded-xl p-6 shadow-lg flex flex-col justify-center border-t-4 border-emerald-500">
+                    <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Total Pendapatan OVT</p>
+                    <p class="text-2xl font-bold text-emerald-400 mt-2" id="kpiTotalUang">Rp 0</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 relative z-10">
+                <div class="glass-effect rounded-xl p-5 shadow-lg border border-slate-700">
+                    <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Rata-rata per Karyawan</p>
+                    <p class="text-2xl font-bold text-amber-300 mt-2" id="kpiRataKaryawan">0 Jam</p>
+                </div>
+                <div class="glass-effect rounded-xl p-5 shadow-lg border border-slate-700">
+                    <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Target Lembur</p>
+                    <p class="text-2xl font-bold mt-2" id="kpiTargetStatus">Belum ada data</p>
+                </div>
+                <div class="glass-effect rounded-xl p-5 shadow-lg border border-slate-700">
+                    <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Karyawan Paling Tinggi</p>
+                    <p class="text-xl font-bold text-blue-300 mt-2" id="kpiKaryawanTinggi">-</p>
+                </div>
+            </div>
+
+            <div class="glass-effect rounded-xl p-5 mb-8 relative z-10 border border-slate-700">
+                <div class="flex items-center justify-between gap-4">
+                    <div>
+                        <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Peringatan</p>
+                        <p class="text-sm text-slate-300 mt-1">Status lembur aktif dan estimasi pengendalian periode ini.</p>
+                    </div>
+                </div>
+                <div id="warningPanel" class="mt-4 text-sm text-slate-200"></div>
+            </div>
+
+            <div class="glass-effect rounded-xl p-6 shadow-lg relative z-10 mb-8 border border-slate-700">
+                <div class="flex items-center justify-between gap-4 mb-4">
+                    <div>
+                        <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Status Persetujuan</p>
+                        <h3 class="text-xl font-semibold mt-1">Ringkasan Pending Review</h3>
+                    </div>
+                </div>
+                <div id="pendingApprovalContainer" class="space-y-2"></div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 relative z-10 mb-8">
+                <div class="glass-effect rounded-xl p-6 shadow-lg">
+                    <h3 class="text-xl font-semibold mb-2" id="judulChartBar">Distribusi Jam Lembur</h3>
+                    <div id="chartKaryawan"></div>
+                </div>
+                <div class="glass-effect rounded-xl p-6 shadow-lg">
+                    <h3 class="text-xl font-semibold mb-2">Tren Lembur Harian</h3>
+                    <div id="chartTren"></div>
+                </div>
+            </div>
+
+            <!-- WEEKLY HEATMAP MATRIX (POLA JAM SIBUK LEMBUR) -->
+            <div class="glass-effect rounded-xl p-6 shadow-lg relative z-10 mb-8 border border-slate-700">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl">🗓️</span>
+                            <h3 class="text-xl font-semibold text-white">Matriks Jam Sibuk Lembur (Weekly Heatmap)</h3>
+                        </div>
+                        <p class="text-xs text-slate-400 mt-1">Peta intensitas akumulasi jam lembur berdasarkan hari kerja (Senin - Minggu) dan rentang slot waktu</p>
+                    </div>
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <span id="badgePeakDay" class="px-3 py-1.5 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 flex items-center gap-1.5">
+                            <span>🔥</span> <span id="textPeakDay">Hari Tersibuk: -</span>
+                        </span>
+                        <span id="badgePeakSlot" class="px-3 py-1.5 rounded-full text-xs font-bold bg-blue-500/20 text-blue-300 border border-blue-500/40 flex items-center gap-1.5">
+                            <span>⏰</span> <span id="textPeakSlot">Jam Puncak: -</span>
+                        </span>
+                    </div>
+                </div>
+                <div id="chartWeeklyHeatmap" class="w-full"></div>
+            </div>
+
+            <div class="glass-effect rounded-xl p-6 shadow-lg relative z-10 mb-8">
+                <div class="flex items-center justify-between gap-4 mb-4">
+                    <div>
+                        <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Detail Per Karyawan</p>
+                        <h3 class="text-xl font-semibold mt-1">Ringkasan lembur berdasarkan pegawai</h3>
+                    </div>
+                </div>
+                <div id="detailKaryawanContainer" class="space-y-3"></div>
+            </div>
+        </div>
+
+
+
+        <div id="halamanLembur" class="hidden relative z-10">
+            <!-- Header Halaman Riwayat & Audit -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-700 mb-6 gap-4">
+                <div>
+                    <div class="flex items-center gap-3">
+                        <h2 class="text-3xl font-semibold">Tabel Riwayat & Verifikasi Lembur</h2>
+                        <span id="badgeTotalRecords" class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-400 border border-blue-500/30">0 Transaksi</span>
+                    </div>
+                    <p class="text-slate-400 mt-1 text-sm">Pemeriksaan rincian transaksi, verifikasi approval, dan audit validitas input spreadsheet.</p>
+                </div>
+                <div class="flex items-center gap-2.5 shrink-0 flex-wrap">
+                    <button id="btnToggleAuditAnomali" class="px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 border border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 shadow-sm cursor-pointer active:scale-95" title="Deteksi kesalahan input spreadsheet otomatis">
+                        <span>🔍</span>
+                        <span id="textBtnAnomali">Cek Anomali Data</span>
+                        <span id="badgeCountAnomali" class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-500/30 text-amber-200">0</span>
+                    </button>
+                    <button id="btnTableExportExcel" class="px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer bg-emerald-600 text-white hover:bg-emerald-500 shadow-md active:scale-95" title="Export tabel lembur ke file Excel formal (.xlsx)">
+                        <span>📗</span><span>Export Excel (.xlsx)</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Banner Notifikasi Audit Anomali Spreadsheet -->
+            <div id="bannerAuditAnomali" class="hidden mb-6 p-4 rounded-xl border border-amber-500/40 bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent transition-all shadow-sm">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                    <div class="flex items-start gap-3">
+                        <span class="text-2xl mt-0.5">⚠️</span>
+                        <div>
+                            <h4 class="text-sm font-bold text-amber-300 flex items-center gap-2">
+                                <span>Hasil Audit Input Spreadsheet:</span>
+                                <span id="textRingkasanAnomali" class="font-normal text-slate-200">Ditemukan 0 data berpotensi keliru</span>
+                            </h4>
+                            <div class="flex flex-wrap gap-2 mt-2" id="containerBadgesAnomali">
+                                <!-- JS Inject breakdown anomali -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 shrink-0">
+                        <button id="btnLihatHanyaAnomali" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-500 text-slate-950 hover:bg-amber-400 transition cursor-pointer shadow-sm">
+                            ⚠️ Filter Hanya Anomali
+                        </button>
+                        <button id="btnLihatSemuaData" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 transition cursor-pointer">
+                            Tampilkan Semua
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-effect rounded-xl p-6 shadow-lg overflow-hidden flex flex-col mb-8">
+                <!-- Multi-Filter & Search Toolbar -->
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-5 pb-4 border-b border-slate-200 dark:border-slate-700/60">
+                    <div class="flex-1 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+                        <button id="btnTambahLembur" class="px-3.5 py-2 rounded-lg text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-md shadow-indigo-600/30 transition flex items-center justify-center gap-1.5 cursor-pointer shrink-0" title="Input lembur baru langsung ke sistem dan spreadsheet">
+                            <span>➕</span><span>Input Lembur Cepat</span>
+                        </button>
+                        <div class="relative flex-1 min-w-[220px]">
+                            <span class="absolute left-3 top-2.5 text-slate-400 text-sm">🔍</span>
+                            <input type="text" id="inputTableSearch" placeholder="Cari nama karyawan, tanggal, atau tugas..." class="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-indigo-500 shadow-sm">
+                        </div>
+                        <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+                            <select id="filterTableJenisHari" class="text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 p-2 font-medium focus:outline-none focus:border-indigo-500 shadow-sm cursor-pointer">
+                                <option value="Semua">Semua Tipe Hari</option>
+                                <option value="B">Hari Biasa (B)</option>
+                                <option value="L">Hari Libur (L)</option>
+                            </select>
+                            <select id="filterTableApproval" class="text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 p-2 font-medium focus:outline-none focus:border-indigo-500 shadow-sm cursor-pointer">
+                                <option value="Semua">Semua Approval</option>
+                                <option value="Approved">✅ Approved</option>
+                                <option value="Pending">⏳ Pending</option>
+                                <option value="Rejected">❌ Rejected</option>
+                            </select>
+                            <select id="filterTableModeAudit" class="text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 p-2 font-medium focus:outline-none focus:border-indigo-500 shadow-sm cursor-pointer">
+                                <option value="Semua">Semua Data</option>
+                                <option value="Anomali">⚠️ Hanya Anomali</option>
+                                <option value="Normal">✅ Data Normal</option>
+                            </select>
+                            <button id="btnResetTableFilters" class="px-2.5 py-2 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer flex items-center gap-1 shrink-0" title="Reset filter tabel">
+                                <span>🔄</span><span>Reset</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="text-xs text-slate-500 dark:text-slate-400 font-medium shrink-0 self-end lg:self-center">
+                        Menampilkan <span id="countTabelTampil" class="font-bold text-indigo-600 dark:text-indigo-400">0</span> dari <span id="countTabelTotal" class="font-bold">0</span> data
+                    </div>
+                </div>
+
+                <!-- Table Container with Sortable Headers -->
+                <div class="overflow-x-auto rounded-lg">
+                    <table class="w-full text-left text-sm text-slate-300" id="tabelLogUtama">
+                        <thead class="text-xs text-slate-400 uppercase bg-slate-800/80 border-b border-slate-600 select-none">
+                            <tr>
+                                <th id="thSortTanggal" class="px-4 py-4 rounded-tl-lg cursor-pointer hover:text-white transition group" title="Klik untuk mengurutkan tanggal">
+                                    <div class="flex items-center gap-1.5">
+                                        <span>Tgl</span>
+                                        <span class="text-[10px] text-slate-500 group-hover:text-indigo-400" id="iconSortTanggal">↕</span>
+                                    </div>
+                                </th>
+                                <th class="px-4 py-4">Tipe Hari</th>
+                                <th id="thSortNama" class="px-4 py-4 cursor-pointer hover:text-white transition group" title="Klik untuk mengurutkan nama karyawan">
+                                    <div class="flex items-center gap-1.5">
+                                        <span>Karyawan</span>
+                                        <span class="text-[10px] text-slate-500 group-hover:text-indigo-400" id="iconSortNama">↕</span>
+                                    </div>
+                                </th>
+                                <th class="px-4 py-4 text-center">Waktu</th>
+                                <th id="thSortJam" class="px-4 py-4 text-center cursor-pointer hover:text-white transition group" title="Klik untuk mengurutkan durasi jam">
+                                    <div class="flex items-center justify-center gap-1.5">
+                                        <span>Jam</span>
+                                        <span class="text-[10px] text-slate-500 group-hover:text-indigo-400" id="iconSortJam">↕</span>
+                                    </div>
+                                </th>
+                                <th id="thSortUang" class="px-4 py-4 text-right cursor-pointer hover:text-white transition group" title="Klik untuk mengurutkan nominal uang">
+                                    <div class="flex items-center justify-end gap-1.5">
+                                        <span>Uang OVT</span>
+                                        <span class="text-[10px] text-slate-500 group-hover:text-indigo-400" id="iconSortUang">↕</span>
+                                    </div>
+                                </th>
+                                <th class="px-4 py-4">Status</th>
+                                <th class="px-4 py-4">Aksi</th>
+                                <th class="px-4 py-4">Uraian Tugas</th>
+                                <th class="px-4 py-4 rounded-tr-lg text-center">Audit Input</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelLogContainer" class="divide-y divide-slate-700/50">
+                            <!-- JS Inject -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- HALAMAN BENCHMARK ANTAR-DIVISI -->
+        <div id="halamanBenchmark" class="hidden relative z-10">
+            <!-- Header Halaman Benchmark -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-700 mb-8 gap-4">
+                <div>
+                    <div class="flex items-center gap-3">
+                        <h2 class="text-3xl font-semibold">Komparasi & Benchmark Antar-Divisi</h2>
+                        <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">Lintas Departemen</span>
+                    </div>
+                    <p class="text-slate-400 mt-1">Analisis perbandingan beban lembur, efisiensi anggaran, dan rasio hari libur seluruh unit.</p>
+                </div>
+                <div class="flex items-center gap-3 shrink-0">
+                    <button id="btnRefreshBenchmark" class="rounded-xl px-4 py-2.5 text-xs font-bold transition flex items-center gap-2 shadow-md cursor-pointer active:scale-95" title="Tarik dan sinkronkan data spreadsheet dari Google Docs untuk seluruh departemen">
+                        <span id="refreshBenchmarkIcon">🔄</span>
+                        <span id="refreshBenchmarkText">Tarik Data Spreadsheet Seluruh Divisi</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- KPI Cards Komparasi -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="h-32 glass-effect rounded-xl p-6 shadow-lg flex flex-col justify-center border-t-4 border-indigo-500">
+                    <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Total Jam Seluruh Divisi</p>
+                    <p class="text-3xl font-bold text-indigo-400 mt-2" id="kpiBenchTotalJam">0 Jam</p>
+                    <p class="text-[11px] text-slate-400 mt-1" id="kpiBenchTotalKaryawan">0 Personel aktif</p>
+                </div>
+                <div class="h-32 glass-effect rounded-xl p-6 shadow-lg flex flex-col justify-center border-t-4 border-emerald-500">
+                    <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Total Anggaran Lembur</p>
+                    <p class="text-2xl font-bold text-emerald-400 mt-2" id="kpiBenchTotalUang">Rp 0</p>
+                    <p class="text-[11px] text-slate-400 mt-1" id="kpiBenchRataBiaya">Rata-rata: Rp 0 / Divisi</p>
+                </div>
+                <div class="h-32 glass-effect rounded-xl p-6 shadow-lg flex flex-col justify-center border-t-4 border-amber-500">
+                    <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Beban OVT Tertinggi</p>
+                    <p class="text-2xl font-bold text-amber-300 mt-2" id="kpiBenchHighestDept">-</p>
+                    <p class="text-[11px] text-amber-400/80 mt-1" id="kpiBenchHighestVal">0 Jam</p>
+                </div>
+                <div class="h-32 glass-effect rounded-xl p-6 shadow-lg flex flex-col justify-center border-t-4 border-sky-500">
+                    <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Divisi Paling Efisien</p>
+                    <p class="text-2xl font-bold text-sky-300 mt-2" id="kpiBenchLowestDept">-</p>
+                    <p class="text-[11px] text-sky-400/80 mt-1" id="kpiBenchLowestVal">Rasio jam/personel terendah</p>
+                </div>
+            </div>
+
+            <!-- Grid 2 Grafik ApexCharts Benchmark -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <div class="glass-effect rounded-xl p-6 shadow-lg">
+                    <div class="flex items-center justify-between mb-3">
+                        <div>
+                            <h3 class="text-xl font-semibold">Perbandingan Total Jam & Biaya per Divisi</h3>
+                            <p class="text-xs text-slate-400">Akumulasi jam lembur dan perkiraan biaya per departemen</p>
+                        </div>
+                    </div>
+                    <div id="chartBenchmarkBar"></div>
+                </div>
+                <div class="glass-effect rounded-xl p-6 shadow-lg">
+                    <div class="flex items-center justify-between mb-3">
+                        <div>
+                            <h3 class="text-xl font-semibold">Proporsi Hari Biasa vs Hari Libur</h3>
+                            <p class="text-xs text-slate-400">Perbandingan jam lembur hari reguler (B) vs hari libur (L)</p>
+                        </div>
+                    </div>
+                    <div id="chartBenchmarkRatio"></div>
+                </div>
+            </div>
+
+            <!-- Tabel Ranking & Efisiensi Lintas Divisi -->
+            <div class="glass-effect rounded-xl p-6 shadow-lg overflow-hidden flex flex-col mb-8">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h3 class="text-xl font-semibold">Matriks Benchmark Efisiensi Lintas Divisi</h3>
+                        <p class="text-xs text-slate-400">Rangkuman kinerja lembur, rasio per personel, dan estimasi beban kerja</p>
+                    </div>
+                </div>
+                <div class="overflow-x-auto rounded-lg">
+                    <table class="w-full text-left text-sm text-slate-300">
+                        <thead class="text-xs text-slate-400 uppercase bg-slate-800/80 border-b border-slate-600">
+                            <tr>
+                                <th class="px-4 py-3.5 rounded-tl-lg">Peringkat</th>
+                                <th class="px-4 py-3.5">Departemen</th>
+                                <th class="px-4 py-3.5 text-center">Personel Aktif</th>
+                                <th class="px-4 py-3.5 text-center">Total Jam</th>
+                                <th class="px-4 py-3.5 text-center">Rata-rata/Personel</th>
+                                <th class="px-4 py-3.5 text-right">Total Biaya</th>
+                                <th class="px-4 py-3.5 text-center">Rasio Libur</th>
+                                <th class="px-4 py-3.5 text-center">Status Beban</th>
+                                <th class="px-4 py-3.5 text-center rounded-tr-lg">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelBenchmarkBody" class="divide-y divide-slate-700/50">
+                            <!-- JS Inject -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- MODAL KELOLA DEPARTEMEN -->
+    <div id="modalKelolaDept" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 overflow-y-auto">
+        <div class="w-full max-w-2xl rounded-2xl border border-slate-700 bg-slate-900 shadow-2xl p-6 text-white my-8 max-h-[90vh] flex flex-col">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-xl">🏢</div>
+                    <div>
+                        <h3 class="text-xl font-bold">Kelola Departemen & Spreadsheet</h3>
+                        <p class="text-xs text-slate-400 mt-0.5">Atur link Google Spreadsheet untuk setiap divisi</p>
+                    </div>
+                </div>
+                <button id="btnTutupModalDept" class="text-slate-400 hover:text-white text-2xl font-bold p-1 leading-none transition">&times;</button>
+            </div>
+
+            <div class="overflow-y-auto flex-1 pr-1 space-y-6 mt-4">
+                <!-- TABEL / DAFTAR DEPARTEMEN -->
+                <div>
+                    <h4 class="text-xs uppercase tracking-wider text-slate-400 font-semibold mb-3">Daftar Departemen Aktif</h4>
+                    <div id="daftarDeptContainer" class="space-y-2">
+                        <!-- Dynamic department rows -->
+                    </div>
+                </div>
+
+                <!-- FORM TAMBAH / EDIT DEPARTEMEN -->
+                <div class="pt-5 border-t border-slate-800">
+                    <h4 class="text-xs uppercase tracking-wider text-blue-400 font-semibold mb-3 flex items-center gap-1.5">
+                        <span>➕</span> <span id="formDeptTitle">Tambah Departemen Baru</span>
+                    </h4>
+                    <form id="formTambahDept" class="space-y-4">
+                        <input type="hidden" id="inputDeptId" value="">
+                        <div>
+                            <label for="inputDeptNama" class="block text-xs text-slate-300 mb-1 font-medium">Nama Departemen / Divisi</label>
+                            <input id="inputDeptNama" type="text" placeholder="Contoh: PRODUKSI, LOGISTIK, MAINTENANCE" required class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2.5 text-sm text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label for="inputDeptUrl" class="block text-xs text-slate-300 mb-1 font-medium">Link Google Spreadsheet</label>
+                            <input id="inputDeptUrl" type="url" placeholder="https://docs.google.com/spreadsheets/d/..." required class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2.5 text-sm text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none">
+                            <p class="text-[11px] text-slate-400 mt-1">Bisa link share biasa (docs.google.com/spreadsheets/d/...) atau link Publish to Web (.xlsx / pubhtml).</p>
+                        </div>
+                        <div>
+                            <label for="inputDeptWebhook" class="block text-xs text-slate-300 mb-1 font-medium">Link Webhook Apps Script (Dua Arah - Opsional)</label>
+                            <input id="inputDeptWebhook" type="url" placeholder="https://script.google.com/macros/s/.../exec" class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2.5 text-sm text-white placeholder-slate-500 focus:border-indigo-500 focus:outline-none">
+                            <p class="text-[11px] text-slate-400 mt-1">Isi URL Apps Script jika ingin penambahan/edit/hapus dari web otomatis tembus ke Google Sheet online.</p>
+                        </div>
+
+                        <!-- Panduan Format Kolom -->
+                        <div class="rounded-xl border border-blue-500/20 bg-blue-500/10 p-3.5 text-xs text-slate-300 space-y-2">
+                            <div class="font-semibold text-blue-300 flex items-center gap-1.5">
+                                <span>ℹ️</span> <span>Ketentuan Format Spreadsheet:</span>
+                            </div>
+                            <ul class="list-disc list-inside space-y-1 text-slate-300 text-[11px]">
+                                <li>Pastikan akses spreadsheet dibuka untuk umum (<b>"Anyone with the link"</b> atau dipublikasikan).</li>
+                                <li>Format kolom wajib: <b>NAMA KARYAWAN</b>, <b>TANGGAL/TGL</b>, <b>MULAI</b>, <b>SELESAI</b>, <b>JUMLAH JAM/LEMBUR</b>, <b>UANG/TARIF</b>, <b>KETERANGAN</b>.</li>
+                                <li>Sistem otomatis membaca <b>seluruh sheet/tab</b>, jadi penambahan tab mingguan/bulanan baru akan otomatis tergabung!</li>
+                            </ul>
+                        </div>
+
+                        <div id="modalDeptAlert" class="hidden rounded-lg p-3 text-xs font-medium"></div>
+
+                        <div class="flex items-center justify-end gap-3 pt-2">
+                            <button type="button" id="btnBatalEditDept" class="hidden rounded-lg border border-slate-700 px-4 py-2 text-sm text-slate-300 hover:bg-slate-800 transition">Batal</button>
+                            <button type="submit" id="btnSubmitDept" class="rounded-lg bg-blue-600 hover:bg-blue-500 px-5 py-2.5 text-sm font-semibold text-white transition shadow-lg shadow-blue-500/20 flex items-center gap-2">
+                                <span id="submitDeptSpinner" class="hidden animate-spin">⌛</span>
+                                <span id="submitDeptText">Simpan & Tarik Data</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL SIMULATOR RENCANA LEMBUR & ESTIMASI BIAYA SPL -->
+    <div id="modalSimulatorLembur" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 overflow-y-auto">
+        <div class="w-full max-w-xl rounded-2xl border border-slate-700 bg-slate-900 shadow-2xl p-6 text-white my-8 max-h-[92vh] flex flex-col">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-xl">🧮</div>
+                    <div>
+                        <h3 class="text-xl font-bold">Kalkulator & Estimator Lembur (SPL)</h3>
+                        <p class="text-xs text-slate-400 mt-0.5">Simulasi estimasi biaya dan akumulasi jam sebelum penerbitan SPL</p>
+                    </div>
+                </div>
+                <button id="btnTutupModalSimulator" class="text-slate-400 hover:text-white text-2xl font-bold p-1 leading-none transition cursor-pointer">&times;</button>
+            </div>
+
+            <div class="overflow-y-auto flex-1 pr-1 space-y-5 mt-4">
+                <!-- FORM INPUT SIMULATOR -->
+                <div class="space-y-3.5">
+                    <div>
+                        <label for="simDept" class="block text-xs text-slate-300 mb-1 font-medium">Departemen / Unit</label>
+                        <select id="simDept" class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none cursor-pointer">
+                            <!-- Populated dynamically -->
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                        <div>
+                            <label for="simJumlahPersonel" class="block text-xs text-slate-300 mb-1 font-medium">Jumlah Personel (Orang)</label>
+                            <input id="simJumlahPersonel" type="number" min="1" max="100" value="3" class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label for="simJenisHari" class="block text-xs text-slate-300 mb-1 font-medium">Jenis Hari</label>
+                            <select id="simJenisHari" class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none cursor-pointer">
+                                <option value="B">Hari Biasa (Kerja)</option>
+                                <option value="L">Hari Libur / Weekend</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                        <div>
+                            <label for="simDurasiJam" class="block text-xs text-slate-300 mb-1 font-medium">Durasi Lembur per Orang (Jam)</label>
+                            <input id="simDurasiJam" type="number" min="0.5" max="24" step="0.5" value="3" class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label for="simTarifPerJam" class="block text-xs text-slate-300 mb-1 font-medium">Tarif Dasar / Jam (Rp)</label>
+                            <input id="simTarifPerJam" type="number" min="1000" step="1000" value="32000" class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="simUraianTugas" class="block text-xs text-slate-300 mb-1 font-medium">Rencana Uraian Pekerjaan (Opsional)</label>
+                        <input id="simUraianTugas" type="text" placeholder="Contoh: Bongkar bahan baku jagung / support produksi akhir pekan" class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none placeholder-slate-500">
+                    </div>
+                </div>
+
+                <!-- LIVE PREVIEW RESULT CARD -->
+                <div class="rounded-xl border border-indigo-500/30 bg-slate-800/80 p-4 space-y-3">
+                    <p class="text-xs font-bold text-indigo-300 uppercase tracking-wider flex items-center gap-1.5">
+                        <span>⚡</span><span>Hasil Kalkulasi Estimasi Real-Time</span>
+                    </p>
+                    <div class="grid grid-cols-2 gap-3 text-center">
+                        <div class="rounded-lg bg-slate-900/80 p-3 border border-slate-700">
+                            <span class="text-[11px] text-slate-400 block font-medium">Total Akumulasi Jam</span>
+                            <span class="text-2xl font-bold text-amber-300" id="simOutTotalJam">9.0 Jam</span>
+                        </div>
+                        <div class="rounded-lg bg-slate-900/80 p-3 border border-slate-700">
+                            <span class="text-[11px] text-slate-400 block font-medium">Estimasi Total Biaya</span>
+                            <span class="text-2xl font-bold text-emerald-400" id="simOutTotalBiaya">Rp 288.000</span>
+                        </div>
+                    </div>
+
+                    <div id="simOutImpact" class="rounded-lg bg-slate-900/60 border border-slate-700 p-2.5 text-xs text-slate-300">
+                        <!-- Dynamic Impact info -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between gap-3 pt-4 border-t border-slate-800 mt-2">
+                <button type="button" id="btnSalinSplWa" class="rounded-xl bg-emerald-600 hover:bg-emerald-500 px-4 py-2.5 text-xs font-bold text-white transition flex items-center gap-2 shadow cursor-pointer">
+                    <span>📲</span><span>Salin Draf Pengajuan SPL ke WA</span>
+                </button>
+                <button type="button" id="btnTutupModalSimulatorBottom" class="rounded-xl border border-slate-700 px-4 py-2.5 text-xs font-semibold text-slate-300 hover:bg-slate-800 transition cursor-pointer">
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL INPUT / EDIT LEMBUR (DUA ARAH GOOGLE SHEETS) -->
+    <div id="modalFormLembur" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 overflow-y-auto">
+        <div class="w-full max-w-lg rounded-2xl border border-slate-700 bg-slate-900 shadow-2xl p-6 text-white my-8 max-h-[92vh] flex flex-col">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-xl" id="modalLemburIcon">📝</div>
+                    <div>
+                        <h3 class="text-xl font-bold" id="modalLemburJudul">Input Lembur Baru</h3>
+                        <p class="text-xs text-slate-400 mt-0.5" id="modalLemburSubjudul">Sinkronisasi otomatis ke database lokal & Google Spreadsheet</p>
+                    </div>
+                </div>
+                <button id="btnTutupModalLembur" class="text-slate-400 hover:text-white text-2xl font-bold p-1 leading-none transition cursor-pointer">&times;</button>
+            </div>
+
+            <form id="formInputLembur" class="overflow-y-auto flex-1 pr-1 space-y-4 mt-4">
+                <input type="hidden" id="inputLemburMode" value="create">
+                <input type="hidden" id="inputLemburOldItem" value="">
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <div>
+                        <label for="inputLemburTanggal" class="block text-xs text-slate-300 mb-1 font-medium">Tanggal Lembur <span class="text-rose-400">*</span></label>
+                        <input id="inputLemburTanggal" type="date" required class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label for="inputLemburJenisHari" class="block text-xs text-slate-300 mb-1 font-medium">Jenis Hari <span class="text-rose-400">*</span></label>
+                        <select id="inputLemburJenisHari" class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none cursor-pointer">
+                            <option value="B">Hari Biasa (B) - Rp 32.000/jam</option>
+                            <option value="L">Hari Libur (L) - Rp 43.000/jam</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="inputLemburNama" class="block text-xs text-slate-300 mb-1 font-medium">Nama Karyawan <span class="text-rose-400">*</span></label>
+                    <input id="inputLemburNama" list="listKaryawanDept" type="text" placeholder="Ketik atau pilih nama karyawan..." required class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none placeholder-slate-500">
+                    <datalist id="listKaryawanDept"></datalist>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                    <div>
+                        <label for="inputLemburMulai" class="block text-xs text-slate-300 mb-1 font-medium">Jam Mulai</label>
+                        <input id="inputLemburMulai" type="text" placeholder="17:00" value="17:00" class="w-full rounded-lg border border-slate-700 bg-slate-800 px-2.5 py-2 text-sm text-white text-center focus:border-indigo-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label for="inputLemburSelesai" class="block text-xs text-slate-300 mb-1 font-medium">Jam Selesai</label>
+                        <input id="inputLemburSelesai" type="text" placeholder="20:00" value="20:00" class="w-full rounded-lg border border-slate-700 bg-slate-800 px-2.5 py-2 text-sm text-white text-center focus:border-indigo-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label for="inputLemburJam" class="block text-xs text-slate-300 mb-1 font-medium">Durasi (Jam) <span class="text-rose-400">*</span></label>
+                        <input id="inputLemburJam" type="number" min="0.5" max="24" step="0.5" value="3" required class="w-full rounded-lg border border-slate-700 bg-slate-800 px-2.5 py-2 text-sm text-white text-center font-bold text-amber-300 focus:border-indigo-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label for="inputLemburUang" class="block text-xs text-slate-300 mb-1 font-medium">Uang OVT (Rp) <span class="text-rose-400">*</span></label>
+                        <input id="inputLemburUang" type="number" min="0" step="1000" value="96000" required class="w-full rounded-lg border border-slate-700 bg-slate-800 px-2.5 py-2 text-sm text-white text-right font-bold text-emerald-400 focus:border-indigo-500 focus:outline-none">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <div>
+                        <label for="inputLemburSheet" class="block text-xs text-slate-300 mb-1 font-medium">Target Sheet / Periode</label>
+                        <input id="inputLemburSheet" type="text" placeholder="Contoh: 21 JUN - 20 JUL" class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none placeholder-slate-500">
+                    </div>
+                    <div>
+                        <label for="inputLemburStatus" class="block text-xs text-slate-300 mb-1 font-medium">Status Pengajuan</label>
+                        <select id="inputLemburStatus" class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none cursor-pointer">
+                            <option value="Approved">✅ Approved (Disetujui)</option>
+                            <option value="Pending" selected>⏳ Pending (Menunggu)</option>
+                            <option value="Rejected">❌ Rejected (Ditolak)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="inputLemburKeterangan" class="block text-xs text-slate-300 mb-1 font-medium">Uraian Tugas / Alasan Lembur</label>
+                    <textarea id="inputLemburKeterangan" rows="2" placeholder="Contoh: Packing order urgent supermarket / Overtime closing bulanan" class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none placeholder-slate-500"></textarea>
+                </div>
+
+                <!-- Info Banner Webhook Status -->
+                <div id="boxWebhookStatus" class="rounded-xl border border-indigo-500/20 bg-indigo-500/10 p-3 text-xs text-indigo-200 flex items-start gap-2">
+                    <span class="text-base">⚡</span>
+                    <div class="flex-1">
+                        <span class="font-semibold block" id="textWebhookTitle">Sinkronisasi Real-Time</span>
+                        <span class="text-[11px] text-slate-300 block" id="textWebhookDesc">Data akan langsung tersimpan di sistem lokal dan dikirim ke Google Spreadsheet jika Webhook aktif.</span>
+                    </div>
+                </div>
+
+                <div id="modalLemburAlert" class="hidden rounded-lg p-3 text-xs font-medium"></div>
+
+                <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">
+                    <button type="button" id="btnBatalInputLembur" class="rounded-xl border border-slate-700 px-4 py-2 text-xs font-semibold text-slate-300 hover:bg-slate-800 transition cursor-pointer">Batal</button>
+                    <button type="submit" id="btnSubmitLembur" class="rounded-xl bg-indigo-600 hover:bg-indigo-500 px-5 py-2.5 text-xs font-bold text-white transition shadow-lg shadow-indigo-600/30 flex items-center gap-2 cursor-pointer">
+                        <span id="submitLemburSpinner" class="hidden animate-spin">⌛</span>
+                        <span id="submitLemburText">Simpan Data Lembur</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    </div>
+
+    <script src="data/data.js?v=20260906_06"></script>
+    <script src="app.js?v=20260906_08_fixed_ppt"></script>
+</body>
+</html>
