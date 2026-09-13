@@ -65,6 +65,22 @@ const btnSubmitLembur = document.getElementById('btnSubmitLembur');
 const submitLemburSpinner = document.getElementById('submitLemburSpinner');
 const submitLemburText = document.getElementById('submitLemburText');
 
+// Elemen Modal Buka Periode Baru (Auto-Create Tab Google Sheets)
+const btnBukaPeriodeBaru = document.getElementById('btnBukaPeriodeBaru');
+const modalPeriodeBaru = document.getElementById('modalPeriodeBaru');
+const btnTutupModalPeriode = document.getElementById('btnTutupModalPeriode');
+const btnBatalPeriode = document.getElementById('btnBatalPeriode');
+const formPeriodeBaru = document.getElementById('formPeriodeBaru');
+const inputPeriodeMulai = document.getElementById('inputPeriodeMulai');
+const inputPeriodeSelesai = document.getElementById('inputPeriodeSelesai');
+const inputPeriodeNama = document.getElementById('inputPeriodeNama');
+const inputPeriodeSpv = document.getElementById('inputPeriodeSpv');
+const inputPeriodeDept = document.getElementById('inputPeriodeDept');
+const modalPeriodeAlert = document.getElementById('modalPeriodeAlert');
+const btnSubmitPeriode = document.getElementById('btnSubmitPeriode');
+const submitPeriodeSpinner = document.getElementById('submitPeriodeSpinner');
+const submitPeriodeText = document.getElementById('submitPeriodeText');
+
 const LOGIN_KEY = 'ovtmanager_login';
 const VALID_USER = { username: 'admin', password: 'admin123' };
 
@@ -2796,7 +2812,7 @@ function hitungEstimasiInputLembur() {
     inputLemburUang.value = Math.round(jam * rate);
 }
 
-async function kirimWebhookGoogleSheets(action, item, oldItem = null) {
+async function kirimWebhookGoogleSheets(action, item, oldItem = null, extraData = {}) {
     const dept = getActiveDepartment();
     if (!dept || !dept.webhook_url) {
         console.log('Webhook Google Spreadsheet tidak dikonfigurasi untuk departemen ini. Lewati sync online.');
@@ -2804,12 +2820,12 @@ async function kirimWebhookGoogleSheets(action, item, oldItem = null) {
     }
 
     try {
-        const payload = {
+        const payload = Object.assign({
             action: action,
             dept_id: dept.id,
             item: item,
             old_item: oldItem
-        };
+        }, extraData);
 
         await fetch(dept.webhook_url, {
             method: 'POST',
@@ -3065,6 +3081,174 @@ if (inputLemburJam) {
         inputLemburUang.value = Math.round(jam * rate);
     });
 }
+
+// ====================================================
+// FITUR BUKA PERIODE SPL MINGGUAN BARU (GOOGLE SHEETS)
+// ====================================================
+
+function hitungPeriodeMingguBerikutnya() {
+    let maxDate = null;
+    const deptData = allDeptData[activeDeptId] || (typeof data_dashboard !== 'undefined' ? data_dashboard : null);
+    if (deptData && deptData.log && deptData.log.length > 0) {
+        deptData.log.forEach(row => {
+            if (row.tanggal_iso) {
+                const d = new Date(row.tanggal_iso + 'T00:00:00');
+                if (!isNaN(d.getTime())) {
+                    if (!maxDate || d > maxDate) maxDate = d;
+                }
+            }
+        });
+    }
+
+    if (!maxDate) maxDate = new Date();
+
+    // Dapatkan hari Senin berikutnya setelah maxDate
+    const hari = maxDate.getDay(); // 0 = Minggu, 1 = Senin, ...
+    const selisihKeSenin = (8 - hari) % 7 || 7;
+    const nextSenin = new Date(maxDate);
+    nextSenin.setDate(maxDate.getDate() + selisihKeSenin);
+
+    const nextMinggu = new Date(nextSenin);
+    nextMinggu.setDate(nextSenin.getDate() + 6);
+
+    const pad = (n) => String(n).padStart(2, '0');
+    const isoSenin = `${nextSenin.getFullYear()}-${pad(nextSenin.getMonth() + 1)}-${pad(nextSenin.getDate())}`;
+    const isoMinggu = `${nextMinggu.getFullYear()}-${pad(nextMinggu.getMonth() + 1)}-${pad(nextMinggu.getDate())}`;
+
+    const namaBulanBesar = [
+        'JANUARI', 'FEBRUARI', 'MARET', 'APRIL', 'MEI', 'JUNI',
+        'JULI', 'AGUSTUS', 'SEPTEMBER', 'OKTOBER', 'NOVEMBER', 'DESEMBER'
+    ];
+
+    let labelPeriode = '';
+    if (nextSenin.getMonth() === nextMinggu.getMonth()) {
+        labelPeriode = `${nextSenin.getDate()} - ${nextMinggu.getDate()} ${namaBulanBesar[nextMinggu.getMonth()]} ${nextMinggu.getFullYear()}`;
+    } else {
+        labelPeriode = `${nextSenin.getDate()} ${namaBulanBesar[nextSenin.getMonth()]} - ${nextMinggu.getDate()} ${namaBulanBesar[nextMinggu.getMonth()]} ${nextMinggu.getFullYear()}`;
+    }
+
+    return {
+        isoStart: isoSenin,
+        isoEnd: isoMinggu,
+        labelPeriod: labelPeriode
+    };
+}
+
+function bukaModalPeriodeBaru() {
+    if (!modalPeriodeBaru) return;
+
+    if (modalPeriodeAlert) {
+        modalPeriodeAlert.classList.add('hidden');
+        modalPeriodeAlert.innerHTML = '';
+    }
+
+    const dept = getActiveDepartment();
+    const infoNext = hitungPeriodeMingguBerikutnya();
+
+    if (inputPeriodeMulai) inputPeriodeMulai.value = infoNext.isoStart;
+    if (inputPeriodeSelesai) inputPeriodeSelesai.value = infoNext.isoEnd;
+    if (inputPeriodeNama) inputPeriodeNama.value = infoNext.labelPeriod;
+    if (inputPeriodeDept) inputPeriodeDept.value = dept.name;
+
+    modalPeriodeBaru.classList.remove('hidden');
+    if (inputPeriodeNama) inputPeriodeNama.focus();
+}
+
+function tutupModalPeriodeBaru() {
+    if (!modalPeriodeBaru) return;
+    modalPeriodeBaru.classList.add('hidden');
+}
+
+async function simpanPeriodeBaru(e) {
+    e.preventDefault();
+    const periodName = inputPeriodeNama.value.trim();
+    const startDate = inputPeriodeMulai.value;
+    const endDate = inputPeriodeSelesai.value;
+    const spvName = inputPeriodeSpv.value.trim();
+    const deptName = inputPeriodeDept.value.trim();
+
+    if (!periodName) {
+        modalPeriodeAlert.className = 'rounded-lg p-3 text-xs font-medium bg-rose-500/20 text-rose-300 border border-rose-500/40 block';
+        modalPeriodeAlert.textContent = 'Nama tab periode SPL wajib diisi.';
+        return;
+    }
+
+    const dept = getActiveDepartment();
+    if (!dept || !dept.webhook_url) {
+        modalPeriodeAlert.className = 'rounded-lg p-3 text-xs font-medium bg-amber-500/20 text-amber-300 border border-amber-500/40 block';
+        modalPeriodeAlert.innerHTML = '⚠️ Link Webhook Google Spreadsheet belum terpasang untuk departemen ini. Silakan daftarkan link Webhook di menu <b>"Kelola Departemen"</b> terlebih dahulu agar tab baru bisa dibuat otomatis di Google Sheets.';
+        return;
+    }
+
+    if (submitPeriodeSpinner) submitPeriodeSpinner.classList.remove('hidden');
+    if (btnSubmitPeriode) btnSubmitPeriode.disabled = true;
+    if (submitPeriodeText) submitPeriodeText.textContent = 'Membuat Tab di Google Sheets...';
+
+    try {
+        const payloadExtra = {
+            period_name: periodName,
+            start_date: startDate,
+            end_date: endDate,
+            spv_name: spvName,
+            dept_name: deptName
+        };
+
+        const res = await kirimWebhookGoogleSheets('create_sheet', null, null, payloadExtra);
+        if (!res.ok) {
+            throw new Error(res.error || 'Gagal mengirim perintah ke Webhook.');
+        }
+
+        modalPeriodeAlert.className = 'rounded-lg p-3 text-xs font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 block';
+        modalPeriodeAlert.innerHTML = `🎉 <b>Berhasil!</b> Tab periode baru <b>"${periodName}"</b> telah dibuat di Google Spreadsheet lengkap dengan format resmi PPIC, nomor urut direset ke 1, dan kotak tanda tangan rapi!`;
+
+        if (inputLemburSheet) inputLemburSheet.value = periodName;
+
+        setTimeout(() => {
+            tutupModalPeriodeBaru();
+            if (typeof refreshDataFromPython === 'function') {
+                refreshDataFromPython();
+            } else {
+                window.location.reload();
+            }
+        }, 1800);
+
+    } catch (err) {
+        console.error('Create sheet error:', err);
+        modalPeriodeAlert.className = 'rounded-lg p-3 text-xs font-medium bg-rose-500/20 text-rose-300 border border-rose-500/40 block';
+        modalPeriodeAlert.innerHTML = `❌ Gagal membuat tab baru: ${err.message}`;
+        if (submitPeriodeSpinner) submitPeriodeSpinner.classList.add('hidden');
+        if (btnSubmitPeriode) btnSubmitPeriode.disabled = false;
+        if (submitPeriodeText) submitPeriodeText.textContent = 'Buat Tab Baru di Spreadsheet';
+    }
+}
+
+// Event Listeners Buka Periode Baru
+if (btnBukaPeriodeBaru) btnBukaPeriodeBaru.addEventListener('click', bukaModalPeriodeBaru);
+if (btnTutupModalPeriode) btnTutupModalPeriode.addEventListener('click', tutupModalPeriodeBaru);
+if (btnBatalPeriode) btnBatalPeriode.addEventListener('click', tutupModalPeriodeBaru);
+if (formPeriodeBaru) formPeriodeBaru.addEventListener('submit', simpanPeriodeBaru);
+
+[inputPeriodeMulai, inputPeriodeSelesai].forEach(inp => {
+    if (inp) {
+        inp.addEventListener('change', () => {
+            if (inputPeriodeMulai.value && inputPeriodeSelesai.value) {
+                const s = new Date(inputPeriodeMulai.value + 'T00:00:00');
+                const e = new Date(inputPeriodeSelesai.value + 'T00:00:00');
+                const namaBulanBesar = [
+                    'JANUARI', 'FEBRUARI', 'MARET', 'APRIL', 'MEI', 'JUNI',
+                    'JULI', 'AGUSTUS', 'SEPTEMBER', 'OKTOBER', 'NOVEMBER', 'DESEMBER'
+                ];
+                if (!isNaN(s.getTime()) && !isNaN(e.getTime())) {
+                    if (s.getMonth() === e.getMonth()) {
+                        inputPeriodeNama.value = `${s.getDate()} - ${e.getDate()} ${namaBulanBesar[e.getMonth()]} ${e.getFullYear()}`;
+                    } else {
+                        inputPeriodeNama.value = `${s.getDate()} ${namaBulanBesar[s.getMonth()]} - ${e.getDate()} ${namaBulanBesar[e.getMonth()]} ${e.getFullYear()}`;
+                    }
+                }
+            }
+        });
+    }
+});
 
 // Jalankan Inisialisasi Departemen saat halaman dimuat
 initDepartemen();
